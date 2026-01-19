@@ -8,8 +8,9 @@ import {
   ActivityIndicator,
   RefreshControl
 } from "react-native";
+import BackendApi from"../api/BackendApi.js"
 
-const API_URL = `${API_BASE_URL}/devices`;
+const API_URL = `${API_BASE_URL}/devices/getAllDevices`;
 
 export default function ConnectedDevicesScreen() {
   const [devices, setDevices] = useState([]);
@@ -18,8 +19,8 @@ export default function ConnectedDevicesScreen() {
 
   const fetchDevices = async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
+      const res = await BackendApi.get(API_URL);
+      const data = await res.data;
       setDevices(data.devices || []);
     } catch (err) {
       console.error("Failed to fetch devices", err);
