@@ -37,6 +37,11 @@ export default function HomeScreen({ navigation }) {
         onPress={() => navigation.navigate("Wifi")}
       />
 
+      <Button
+        title="View User Profile"
+        onPress={() => navigation.navigate("UserProfile")}
+      />
+
       
     </View>
 
