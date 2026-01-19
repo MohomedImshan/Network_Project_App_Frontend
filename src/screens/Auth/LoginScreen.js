@@ -52,7 +52,7 @@ const LoginScreen = ({ navigation }) => {
             <View style={styles.logoPlaceholder}>
               <Text style={styles.logoIcon}>⚡</Text>
             </View>
-            <Text style={styles.title}>NetMonitor</Text>
+            <Text style={styles.title}>NetMonitor V1</Text>
             <Text style={styles.subtitle}>Secure Network Access</Text>
           </View>
 

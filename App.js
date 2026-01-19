@@ -13,6 +13,7 @@ import { enableScreens } from 'react-native-screens';
 import HomeScreen from './src/screens/HomeScreen.js';
 import NetworkDetailsScreen from './src/screens/NetworkDetailsScree.js';
 import ConnectedDevicesScreen from './src/screens/ConnectedDevicesScreen.js';
+import WifiScreen from './src/screens/wifiscreen.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ function App() {
         <Stack.Screen name='Home' component={HomeScreen}/>
         <Stack.Screen name='NetworkDetails' component={NetworkDetailsScreen}/>
         <Stack.Screen name='Devices' component={ConnectedDevicesScreen}/>
+        <Stack.Screen name='Wifi' component={WifiScreen}/>
       </Stack.Navigator>
     </NavigationContainer>
   );

@@ -32,6 +32,10 @@ export default function HomeScreen({ navigation }) {
         title="View Connected Devices"
         onPress={() => navigation.navigate("Devices")}
       />
+      <Button
+        title="ABOUT WIFI"
+        onPress={() => navigation.navigate("Wifi")}
+      />
 
       
     </View>

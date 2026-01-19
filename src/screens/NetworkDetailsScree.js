@@ -10,7 +10,7 @@ export default function NetworkDetailsScreen() {
   const [ping, setPing] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  // 🔹 Send data to backend
+ 
   const sendNetworkData = async (payload) => {
     try {
       await fetch(`${API_BASE_URL}/network`, {
@@ -24,7 +24,7 @@ export default function NetworkDetailsScreen() {
     }
   };
 
-  // 🔹 Load local network info
+
   const loadNetworkInfo = async () => {
     const state = await NetInfo.fetch();
     const ip = await NetworkInfo.getIPV4Address();
@@ -40,7 +40,7 @@ export default function NetworkDetailsScreen() {
     });
   };
 
-  // 🔹 Speed test
+  
   const checkSpeed = async () => {
     setLoading(true);
     const start = Date.now();
@@ -57,7 +57,6 @@ export default function NetworkDetailsScreen() {
     setLoading(false);
   };
 
-  // 🔹 Ping test
  const checkPing = async () => {
   try {
     const res = await fetch(`${API_BASE_URL}/ping`);
