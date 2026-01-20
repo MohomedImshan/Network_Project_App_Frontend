@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { API_BASE_URL, DEVICE_ID } from "@env";
 import {
   View,
   Text,
@@ -8,9 +7,7 @@ import {
   ActivityIndicator,
   RefreshControl
 } from "react-native";
-import BackendApi from"../api/BackendApi.js"
-
-const API_URL = `${API_BASE_URL}/devices/getAllDevices`;
+import BackendApi from "../api/BackendApi";
 
 export default function ConnectedDevicesScreen() {
   const [devices, setDevices] = useState([]);
@@ -19,9 +16,8 @@ export default function ConnectedDevicesScreen() {
 
   const fetchDevices = async () => {
     try {
-      const res = await BackendApi.get(API_URL);
-      const data = await res.data;
-      setDevices(data.devices || []);
+      const res = await BackendApi.get("/devices/getAllDevices");
+      setDevices(res.data.devices || []);
     } catch (err) {
       console.error("Failed to fetch devices", err);
     } finally {
@@ -32,8 +28,7 @@ export default function ConnectedDevicesScreen() {
 
   useEffect(() => {
     fetchDevices();
-
-    const interval = setInterval(fetchDevices, 10000); 
+    const interval = setInterval(fetchDevices, 10000);
     return () => clearInterval(interval);
   }, []);
 
@@ -44,23 +39,23 @@ export default function ConnectedDevicesScreen() {
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
-      <Text style={styles.label}>IP:</Text>
+      <Text style={styles.label}>IP</Text>
       <Text style={styles.value}>{item.ip}</Text>
 
-      <Text style={styles.label}>MAC:</Text>
+      <Text style={styles.label}>MAC</Text>
       <Text style={styles.value}>{item.mac}</Text>
 
-      <Text style={styles.status}>
-        Status: {item.status}
-      </Text>
+      <Text style={styles.status}>Status: {item.status}</Text>
     </View>
   );
 
   if (loading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#2563eb" />
-        <Text style={{ color: "#fff", marginTop: 10 }}>Scanning network...</Text>
+        <ActivityIndicator size="large" />
+        <Text style={{ color: "#fff", marginTop: 10 }}>
+          Scanning network...
+        </Text>
       </View>
     );
   }
@@ -71,7 +66,7 @@ export default function ConnectedDevicesScreen() {
 
       <FlatList
         data={devices}
-        keyExtractor={(item) => item.ip}
+        keyExtractor={(item) => item.id}
         renderItem={renderItem}
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
