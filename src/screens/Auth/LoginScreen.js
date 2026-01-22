@@ -60,7 +60,7 @@ const LoginScreen = ({ navigation }) => {
 
           <View style={styles.formContainer}>
             <View style={styles.inputWrapper}>
-              <Text style={styles.label}>SERVER ID / EMAIL</Text>
+              <Text style={styles.label}>EMAIL</Text>
               <TextInput
                 style={styles.input}
                 placeholder="admin@network.local"
