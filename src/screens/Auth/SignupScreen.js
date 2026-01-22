@@ -31,25 +31,13 @@ const SignupScreen = ({ navigation }) => {
       Alert.alert('Error', 'Passwords do not match.');
       return;
     }
-    
-    try{
-        const signupResponse = await BackendApi.post('/user/signup', {
+
+    navigation.navigate('Verification', { email: email,  flow: 'Signup', payload: {
             firstName: firstName,
             lastName: lastName,
             email: email,
             password: password
-        })
-
-        if(signupResponse.status == 200){
-                Alert.alert(signupResponse.data.message)
-                navigation.goBack();
-        }
-
-    }catch(error){
-       console.log(error)
-        Alert.alert(error.response?.data?.detail || 'Something went wrong!')
-    }
-    
+    } });
   };
 
   return (

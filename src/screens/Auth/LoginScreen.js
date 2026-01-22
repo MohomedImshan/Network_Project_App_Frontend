@@ -57,7 +57,7 @@ const LoginScreen = ({ navigation }) => {
       },
       {
         text: "OK",
-        onPress: email => navigation.navigate('Verification', { email: email })
+        onPress: email => navigation.navigate('Verification', { email: email, flow: 'changePassword' })
       }
     ],
     "plain-text"

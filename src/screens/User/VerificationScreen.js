@@ -15,7 +15,7 @@ import BackendApi from '../../api/BackendApi';
 
 const VerificationScreen = ({ route, navigation }) => {
   const [code, setCode] = useState('');
-  const { email } = route.params;
+  const { email, flow, payload } = route.params;
 
   useEffect(() => {
     sendVerificationCode();
@@ -25,7 +25,8 @@ const VerificationScreen = ({ route, navigation }) => {
     try{
 
       const verificationCodeSentResponse = await BackendApi.post('/user/send-verification-code', {
-          email: email
+          email: email,
+          flow: flow
       })
       
       Alert.alert(verificationCodeSentResponse.data.message);
@@ -39,16 +40,37 @@ const VerificationScreen = ({ route, navigation }) => {
     try{
       const verifyCodeResponse = await BackendApi.post('/user/verify-verification-code', {
         email: email,
-        code: code
+        code: code,
+        flow: flow
       })
 
-      navigation.reset({
+      if(flow === 'Signup'){
+        try{
+              const signupResponse = await BackendApi.post('/user/signup', payload)
+      
+              if(signupResponse.status == 200){
+                      Alert.alert(signupResponse.data.message)
+                      navigation.reset({
+                        index: 0,
+                        routes: [{ name: "Login", params: { email: email } }],
+                      });
+              }
+            }catch(error){
+                Alert.alert(error.response?.data?.detail || 'Something went wrong!')
+            }
+      }
+
+      if(flow === 'changePassword'){
+        navigation.reset({
             index: 0,
-            routes: [{ name: 'changePassword', params: { email: email } }],
+            routes: [{ name: flow, params: { email: email } }],
           });
+      }
       
     }catch(error){
-      Alert.alert('Error', 'Failed to verify code.');
+      console.log(error);
+      
+      Alert.alert(error?.response?.data?.detail || 'Invalid verification code. Please try again.');
     }
   }
 

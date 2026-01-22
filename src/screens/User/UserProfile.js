@@ -109,7 +109,7 @@ const UserProfile = ({ navigation}) => {
 
           <TouchableOpacity 
             style={styles.securityActionCard} 
-            onPress={() => navigation.navigate('Verification', { email: userData.email })}
+            onPress={() => navigation.navigate('Verification', { email: userData.email, flow: "changePassword" })}
             activeOpacity={0.7}
             >
             <View style={styles.iconContainer}>
