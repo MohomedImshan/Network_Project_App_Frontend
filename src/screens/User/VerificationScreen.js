@@ -31,6 +31,7 @@ const VerificationScreen = ({ route, navigation }) => {
       Alert.alert(verificationCodeSentResponse.data.message);
     }catch(error){
       Alert.alert('Error', 'Failed to send verification code.');
+      navigation.goBack();
     }
   }
 
@@ -41,7 +42,10 @@ const VerificationScreen = ({ route, navigation }) => {
         code: code
       })
 
-      navigation.navigate('changePassword', { email: email})
+      navigation.reset({
+            index: 0,
+            routes: [{ name: 'changePassword', params: { email: email } }],
+          });
       
     }catch(error){
       Alert.alert('Error', 'Failed to verify code.');

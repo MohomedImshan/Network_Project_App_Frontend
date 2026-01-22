@@ -32,7 +32,10 @@ const LoginScreen = ({ navigation }) => {
         if(loginResponse.status == 200){
             await AsyncStorage.setItem('token', loginResponse.data.token)
             Alert.alert('Authenticated Successfully', `Connected to server as ${email}...`)
-            navigation.replace('Home');
+            navigation.reset({
+            index: 0,
+            routes: [{ name: 'Home' }],
+          });
         }
         
     }catch(error){
@@ -41,6 +44,25 @@ const LoginScreen = ({ navigation }) => {
         Alert.alert(error?.response?.data?.detail || "Something went wrong","Try Again....")
     }
   };
+
+  const handleResetPassword = () => {
+    Alert.prompt(
+    "Enter Name",
+    "Please enter your name:",
+    [
+      {
+        text: "Cancel",
+        onPress: () => console.log("Cancel Pressed"),
+        style: "cancel"
+      },
+      {
+        text: "OK",
+        onPress: email => navigation.navigate('Verification', { email: email })
+      }
+    ],
+    "plain-text"
+  );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
@@ -85,7 +107,7 @@ const LoginScreen = ({ navigation }) => {
             </View>
 
             <TouchableOpacity style={styles.forgotBtn}>
-              <Text style={styles.forgotText}>Forgot Password?</Text>
+              <Text style={styles.forgotText} onPress={() => handleResetPassword()}>Forgot Password?</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 

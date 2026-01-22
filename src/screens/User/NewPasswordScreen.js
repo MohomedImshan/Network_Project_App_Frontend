@@ -29,7 +29,10 @@ const NewPasswordScreen = ({ route, navigation }) => {
         })
 
         Alert.alert("Success", "Your password has been updated successfully.", [
-            { text: 'OK', onPress: () => navigation.navigate('Login') }
+            { text: 'OK', onPress: () => navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          }) }
         ]);
     }catch(error){
         Alert.alert('Error', 'Failed to update password.');
