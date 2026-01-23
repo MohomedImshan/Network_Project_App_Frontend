@@ -107,7 +107,7 @@ const EditProfileScreen = ({ route, navigation }) => {
               <TextInput
                 style={styles.input}
                 value={email}
-                onChangeText={setEmail}
+                editable={false}
                 keyboardType="email-address"
                 autoCapitalize="none"
                 placeholderTextColor="#64748b"

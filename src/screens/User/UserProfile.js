@@ -13,6 +13,7 @@ import {
 } from 'react-native';
 import BackendApi from '../../api/BackendApi';
 import { ActivityIndicator } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const UserProfile = ({ navigation}) => {
     const [userData, setUserData] = useState({firstName: '', lastName: '', email: ''});
@@ -50,7 +51,13 @@ const UserProfile = ({ navigation}) => {
       'Are you sure you want to disconnect?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: () => console.log('Logged out') },
+        { text: 'Logout', style: 'destructive', onPress: async() => {
+          await AsyncStorage.removeItem('token');
+          navigation.reset({
+            index: 0,
+            routes: [{ name: 'Login' }],
+          });
+        }},
       ]
     );
   };
@@ -102,7 +109,7 @@ const UserProfile = ({ navigation}) => {
 
           <TouchableOpacity 
             style={styles.securityActionCard} 
-            onPress={() => navigation.navigate('Verification', { email: userData.email })}
+            onPress={() => navigation.navigate('Verification', { email: userData.email, flow: "changePassword" })}
             activeOpacity={0.7}
             >
             <View style={styles.iconContainer}>
