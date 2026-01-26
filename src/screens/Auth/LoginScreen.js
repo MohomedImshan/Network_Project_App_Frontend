@@ -18,51 +18,60 @@ const LoginScreen = ({ navigation }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
-  const handleLogin = async() => {
+  const handleLogin = async () => {
     if (!email || !password) {
       Alert.alert('Error', 'Please enter valid credentials.');
     }
 
-    try{
-        const loginResponse = await BackendApi.post('/user/login', {
-            email: email,
-            password: password
-        })
+    try {
+      const loginResponse = await BackendApi.post('/user/login', {
+        email: email,
+        password: password,
+      });
 
-        if(loginResponse.status == 200){
-            await AsyncStorage.setItem('token', loginResponse.data.token)
-            Alert.alert('Authenticated Successfully', `Connected to server as ${email}...`)
-            navigation.reset({
-            index: 0,
-            routes: [{ name: 'Home' }],
-          });
-        }
-        
-    }catch(error){
+      if (loginResponse.status == 200) {
+        await AsyncStorage.setItem('token', loginResponse.data.token);
+        Alert.alert(
+          'Authenticated Successfully',
+          `Connected to server as ${email}...`,
+        );
+        navigation.reset({
+          index: 0,
+          routes: [{ name: 'Home' }],
+        });
+      }
+    } catch (error) {
       console.log(error);
-      
-        Alert.alert(error?.response?.data?.detail || "Something went wrong","Try Again....")
+
+      Alert.alert(
+        error?.response?.data?.detail || 'Something went wrong',
+        'Try Again....',
+      );
     }
   };
 
   const handleResetPassword = () => {
     Alert.prompt(
-    "Enter Name",
-    "Please enter your name:",
-    [
-      {
-        text: "Cancel",
-        onPress: () => console.log("Cancel Pressed"),
-        style: "cancel"
-      },
-      {
-        text: "OK",
-        onPress: email => navigation.navigate('Verification', { email: email, flow: 'changePassword' })
-      }
-    ],
-    "plain-text"
-  );
-  }
+      'Enter Name',
+      'Please enter your name:',
+      [
+        {
+          text: 'Cancel',
+          onPress: () => console.log('Cancel Pressed'),
+          style: 'cancel',
+        },
+        {
+          text: 'OK',
+          onPress: email =>
+            navigation.navigate('Verification', {
+              email: email,
+              flow: 'changePassword',
+            }),
+        },
+      ],
+      'plain-text',
+    );
+  };
 
   return (
     <SafeAreaView style={styles.container}>
@@ -107,11 +116,16 @@ const LoginScreen = ({ navigation }) => {
             </View>
 
             <TouchableOpacity style={styles.forgotBtn}>
-              <Text style={styles.forgotText} onPress={() => handleResetPassword()}>Forgot Password?</Text>
+              <Text
+                style={styles.forgotText}
+                onPress={() => handleResetPassword()}
+              >
+                Forgot Password?
+              </Text>
             </TouchableOpacity>
 
-            <TouchableOpacity 
-              style={styles.loginBtn} 
+            <TouchableOpacity
+              style={styles.loginBtn}
               onPress={handleLogin}
               activeOpacity={0.8}
             >
@@ -122,10 +136,17 @@ const LoginScreen = ({ navigation }) => {
           <View style={styles.footer}>
             <Text style={styles.footerText}>New to the network?</Text>
             <TouchableOpacity>
-              <Text style={styles.signupText} onPress={() => {navigation.navigate('Signup')}}> Sign Up</Text>
+              <Text
+                style={styles.signupText}
+                onPress={() => {
+                  navigation.navigate('Signup');
+                }}
+              >
+                {' '}
+                Sign Up
+              </Text>
             </TouchableOpacity>
           </View>
-
         </View>
       </KeyboardAvoidingView>
     </SafeAreaView>
@@ -145,7 +166,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 30,
     justifyContent: 'center',
   },
-  
+
   headerContainer: {
     alignItems: 'center',
     marginBottom: 50,
@@ -153,7 +174,7 @@ const styles = StyleSheet.create({
   logoPlaceholder: {
     width: 80,
     height: 80,
-    backgroundColor: 'rgba(56, 189, 248, 0.1)', 
+    backgroundColor: 'rgba(56, 189, 248, 0.1)',
     borderRadius: 20,
     justifyContent: 'center',
     alignItems: 'center',
