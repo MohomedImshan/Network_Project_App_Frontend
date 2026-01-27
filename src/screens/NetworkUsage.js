@@ -150,6 +150,11 @@ export default function NetworkUsage() {
               <Text style={styles.label}>Packets Received</Text>
               <Text style={styles.value}>{item.packets_recv}</Text>
             </View>
+
+            <View style={styles.gridItem}>
+              <Text style={styles.label}>Sessions</Text>
+              <Text style={styles.value}>{item.sessions}</Text>
+            </View>
           </View>
         )}
       </TouchableOpacity>

@@ -245,7 +245,7 @@ export default function HomeScreen({ navigation }) {
               />
             </View>
             <Text style={styles.cardTitle}>Devices</Text>
-            <Text style={styles.cardSubtitle}>Upload, Download</Text>
+            <Text style={styles.cardSubtitle}>Devices & Usage</Text>
           </TouchableOpacity>
 
           <TouchableOpacity
