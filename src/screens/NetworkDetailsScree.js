@@ -168,6 +168,7 @@ export default function NetworkDetailsScreen({ navigation }) {
             </Text>
           </View>
 
+
           <Text style={styles.ssidText}>{info.ssid || 'Unknown Network'}</Text>
           <Text style={styles.ipText}>IP: {info.ip || '--'}</Text>
 
@@ -181,6 +182,7 @@ export default function NetworkDetailsScreen({ navigation }) {
               {info.type?.toUpperCase() || 'UNKNOWN'}
             </Text>
           </View>
+
         </View>
 
         {/* STATS GRID */}
@@ -303,6 +305,7 @@ const DetailRow = ({ icon, label, value, color }) => (
 );
 
 const styles = StyleSheet.create({
+
   container: { flex: 1, backgroundColor: '#0f172a' },
   header: {
     flexDirection: 'row',
@@ -316,6 +319,7 @@ const styles = StyleSheet.create({
   },
   backButton: { padding: 8, borderRadius: 12, backgroundColor: '#1e293b' },
   headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#fff' },
+
   refreshButton: { padding: 8 },
   scrollContent: { padding: 20, paddingBottom: 40 },
   mainCard: {
