@@ -17,11 +17,7 @@ import {
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-
-   // Added for potential profile image
-
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import BackendApi from '../api/BackendApi'; // <--- 1. IMPORT YOUR API
+import BackendApi from '../api/BackendApi';
 
 
 const { width } = Dimensions.get('window');
@@ -191,7 +187,7 @@ export default function HomeScreen({ navigation }) {
             </View>
           </View>
 
-
+        </TouchableOpacity>
           {/* DISPLAY THE SMART SSID */}
           <Text style={styles.statusTitle}>{getSSID()}</Text>
 
@@ -209,7 +205,7 @@ export default function HomeScreen({ navigation }) {
               </Text>
             </View>
           </View>
-
+        <View>
           {/* TIP: Click to open Location Settings if needed */}
           {getSSID() === 'Unknown (Turn On GPS)' && (
             <TouchableOpacity
@@ -231,7 +227,7 @@ export default function HomeScreen({ navigation }) {
           )}
         </View>
 
-          
+          <TouchableOpacity>
           {/* DISPLAY THE SSID FROM PYTHON BACKEND */}
           <Text style={styles.statusTitle} numberOfLines={1}>
             {getSSID()}
@@ -501,151 +497,7 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
 
-  cardSubtitle: {
-    fontSize: 12,
-    color: '#94a3b8',
-  },
-});
-
-  container: { 
-    flex: 1, 
-    backgroundColor: "#0f172a", 
-    paddingTop: 40, 
-    paddingHorizontal: 20 
-  },
-
-  header: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    alignItems: "center", 
-    marginBottom: 25, 
-    marginTop: 10 
-  },
-
-  greeting: { 
-    fontSize: 22, 
-    fontWeight: "bold", 
-    color: "#fff" 
-  },
-
-  subGreeting: { 
-    fontSize: 14, 
-    color: "#94a3b8" 
-  },
-
-  profileIcon: { 
-    width: 40, 
-    height: 40, 
-    borderRadius: 20, 
-    backgroundColor: "#1e293b", 
-    justifyContent: "center", 
-    alignItems: "center", 
-    borderWidth: 1, 
-    borderColor: "#334155" 
-  },
-
-  statusCard: { 
-    borderRadius: 20, 
-    padding: 20, 
-    marginBottom: 30, 
-    shadowColor: "#000", 
-    shadowOffset: { width: 0, height: 10 }, 
-    shadowOpacity: 0.3, 
-    shadowRadius: 15, 
-    elevation: 10 
-  },
-
-  statusHeader: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    alignItems: "flex-start", 
-    marginBottom: 10 
-  },
-
-  badge: { 
-    backgroundColor: "#fff", // White background for badge
-    paddingHorizontal: 12, 
-    paddingVertical: 6, 
-    borderRadius: 20 
-  },
-
-  badgeText: { 
-    fontWeight: "bold", 
-    fontSize: 12 
-  },
-
-  statusTitle: { 
-    fontSize: 24, 
-    fontWeight: "bold", 
-    color: "#fff", 
-    marginBottom: 20 
-  },
-    
-  statusRow: { 
-    flexDirection: "row", 
-    justifyContent: "space-between", 
-    backgroundColor: "rgba(0,0,0,0.2)", 
-    borderRadius: 12, 
-    padding: 15 
-  },
-
-  statusItem: { 
-    alignItems: "center", 
-    flex: 1 
-  },
-
-  statusLabel: { 
-    color: "rgba(255,255,255,0.7)", 
-    fontSize: 12, 
-    marginBottom: 4 
-  },
-
-  statusValue: { 
-    color: "#fff", 
-    fontWeight: "bold", 
-    fontSize: 14 
-  },
-
-  sectionTitle: { 
-    fontSize: 18, 
-    fontWeight: "bold", 
-    color: "#fff", 
-    marginBottom: 15 
-  },
-
-  gridContainer: { 
-    flexDirection: "row", 
-    flexWrap: "wrap", 
-    justifyContent: "space-between", 
-    paddingBottom: 20 
-  },
-
-  card: { 
-    backgroundColor: "#1e293b",
-    width: (width - 50) / 2, 
-    borderRadius: 16, 
-    padding: 16, 
-    marginBottom: 15, 
-    borderWidth: 1, 
-    borderColor: "#334155" 
-  },
-
-  iconBox: { 
-    width: 50, 
-    height: 50, 
-    borderRadius: 12, 
-    justifyContent: "center", 
-    alignItems: "center", 
-    marginBottom: 12 
-  },
-
-  cardTitle: { 
-    fontSize: 16, 
-    fontWeight: "bold", 
-    color: "#fff", 
-    marginBottom: 4 
-  },
-
+  
   cardSubtitle: { 
     fontSize: 12, 
     color: "#94a3b8" 
