@@ -44,106 +44,76 @@ export default function HomeScreen({ navigation }) {
   };
 
   useEffect(() => {
-    const initNetwork = async () => {
-      // 1. ANDROID PERMISSION REQUEST
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Permission Needed',
-              message:
-                'Android requires Location access to show the Wi-Fi Name (SSID).',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Location permission granted');
-          } else {
-            console.log('Location permission denied');
-          }
-        } catch (err) {
-          console.warn(err);
+  // ANDROID PERMISSION
+  const requestPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission Needed',
+            message:
+              'Android requires Location access to show the Wi-Fi Name (SSID).',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location permission granted');
+        } else {
+          console.log('Location permission denied');
         }
+      } catch (err) {
+        console.warn(err);
       }
+    }
+  };
 
-      // 2. SUBSCRIBE TO NETWORK UPDATES
-      const unsubscribe = NetInfo.addEventListener(state => {
-        setNetwork(state);
-      });
-      return unsubscribe;
-    };
+  requestPermission();
 
-    let unsubscribeFn;
-    initNetwork().then(unsub => {
-      unsubscribeFn = unsub;
-    });
+  // NETWORK LISTENER (SYNC)
+  const unsubscribe = NetInfo.addEventListener(state => {
+    setNetwork(state);
+  });
 
-    return () => {
-      if (unsubscribeFn) unsubscribeFn();
-    };
+  // INITIAL FETCH
+  fetchWifiInfo();
 
-    fetchWifiInfo();
-  }, []);
+  // CLEANUP
+  return () => {
+    unsubscribe();
+  };
+}, []);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchWifiInfo();
-  }, []);
+const onRefresh = useCallback(async () => {
+  setRefreshing(true);
+  await fetchWifiInfo();
+  setRefreshing(false);
+}, []);
 
   // --- HELPERS ---
 
   // Decide card color based on connection
   const getStatusColor = () => {
-    if (!network) return '#64748b';
-    return network.isConnected && network.isInternetReachable
-      ? '#10b981'
-      : '#ef4444';
+    if (!wifiData) return "#64748b"; // Grey (Loading/Error)
+    if (wifiData.ssid && wifiData.ssid !== "Unknown") return "#3b82f6"; // Blue (Connected)
+    return "#ef4444"; // Red (Disconnected)
   };
 
   const getStatusText = () => {
-    if (!network) return 'Checking...';
-    if (network.isConnected && network.isInternetReachable) return 'Online';
-    if (network.isConnected) return 'No Internet';
-    return 'Disconnected';
+    if (loading) return "Scanning...";
+    if (wifiData && wifiData.ssid) return "Connected";
+    return "Offline";
 
-    if (!wifiData) return '#64748b'; // Grey (Loading/Error)
-    if (wifiData.ssid && wifiData.ssid !== 'Unknown') return '#3b82f6'; // Blue (Connected)
-    return '#ef4444'; // Red (Disconnected)
   };
-
-  //   const getStatusText = () => {
-  //     if (loading) return "Scanning...";
-  //     if (wifiData && wifiData.ssid) return "Connected";
-  //     return "Offline";
-
-  //   };
 
   // Get the SSID from backend data
   const getSSID = () => {
-    if (!network) return 'Initializing...';
+    if (loading) return "Initializing...";
+    if (wifiData && wifiData.ssid) return wifiData.ssid;
+    return "No Connection";
 
-    // Check if Wifi
-    if (network.type === 'wifi') {
-      const ssid = network.details?.ssid;
-      // Android hides SSID if GPS is off, returning "<unknown ssid>"
-      if (!ssid || ssid === '<unknown ssid>') {
-        return 'Unknown (Turn On GPS)';
-      }
-      return ssid;
-    }
-
-    // If connected but NOT wifi (e.g. Emulator uses Ethernet, Phone uses 4G)
-    if (network.isConnected) {
-      return `Not Wi-Fi (${network.type})`;
-    }
-
-    return 'No Connection';
-
-    //     if (loading) return "Initializing...";
-    //     if (wifiData && wifiData.ssid) return wifiData.ssid;
-    //     return "No Connection";
   };
 
   return (
@@ -187,16 +157,24 @@ export default function HomeScreen({ navigation }) {
               </Text>
             </View>
           </View>
-        </TouchableOpacity>
-        {/* DISPLAY THE SMART SSID */}
-        <Text style={styles.statusTitle}>{getSSID()}</Text>
 
-        <View style={styles.statusRow}>
-          <View style={styles.statusItem}>
-            <Text style={styles.statusLabel}>Type</Text>
-            <Text style={styles.statusValue}>
-              {network?.type?.toUpperCase() || '--'}
-            </Text>
+     
+          {/* DISPLAY THE SMART SSID */}
+          {/* <Text style={styles.statusTitle}>{getSSID()}</Text> */}
+        {/* </TouchableOpacity>
+          <View style={styles.statusRow}>
+            <View style={styles.statusItem}>
+              <Text style={styles.statusLabel}>Type</Text>
+              <Text style={styles.statusValue}>
+                {network?.type?.toUpperCase() || '--'}
+              </Text>
+            </View>
+            <View style={styles.statusItem}>
+              <Text style={styles.statusLabel}>Internet</Text>
+              <Text style={styles.statusValue}>
+                {network?.isInternetReachable ? 'Reachable' : 'Unreachable'}
+              </Text>
+            </View>
           </View>
           <View style={styles.statusItem}>
             <Text style={styles.statusLabel}>Internet</Text>
@@ -207,7 +185,7 @@ export default function HomeScreen({ navigation }) {
         </View>
         <View>
           {/* TIP: Click to open Location Settings if needed */}
-          {getSSID() === 'Unknown (Turn On GPS)' && (
+          {/* {getSSID() === 'Unknown (Turn On GPS)' && (
             <TouchableOpacity
               style={{
                 marginTop: 15,
@@ -225,14 +203,15 @@ export default function HomeScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           )}
-        </View>
+        </View> */}
 
-        <TouchableOpacity>
+         
           {/* DISPLAY THE SSID FROM PYTHON BACKEND */}
           <Text style={styles.statusTitle} numberOfLines={1}>
             {getSSID()}
           </Text>
-        </TouchableOpacity>
+          
+        </TouchableOpacity> 
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
 
@@ -419,13 +398,14 @@ const styles = StyleSheet.create({
   },
 
   badge: {
+    backgroundColor: '#fff',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
   },
 
   badgeText: {
-    color: '#fff',
+  
     fontWeight: 'bold',
     fontSize: 12,
   },
