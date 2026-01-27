@@ -160,14 +160,7 @@ export default function NetworkDetailsScreen({ navigation }) {
               {info.isConnected ? "Connected" : "Disconnected"}
             </Text>
           </View>
-          
-          <Text style={styles.ssidText}>{info.ssid || "Unknown Network"}</Text>
-          <Text style={styles.ipText}>IP: {info.ip || "--"}</Text>
-
-          <View style={styles.typeBadge}>
-             <MaterialCommunityIcons name={info.type === 'wifi' ? 'wifi' : 'signal'} size={16} color="#cbd5e1" />
-             <Text style={styles.typeText}>{info.type?.toUpperCase() || "UNKNOWN"}</Text>
-          </View>
+      
         </View>
 
         {/* STATS GRID */}
@@ -278,7 +271,7 @@ const DetailRow = ({ icon, label, value, color }) => (
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0f172a" },
-  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 15, backgroundColor: "#0f172a", borderBottomWidth: 1, borderBottomColor: "#1e293b" },
+  header: { flexDirection: "row", alignItems: "center", justifyContent: "space-between", paddingHorizontal: 20, paddingVertical: 30, backgroundColor: "#0f172a", borderBottomWidth: 1, borderBottomColor: "#1e293b" },
   backButton: { padding: 8, borderRadius: 12, backgroundColor: "#1e293b" },
   headerTitle: { fontSize: 18, fontWeight: "bold", color: "#fff" },
   refreshButton: { padding: 8 },
