@@ -26,6 +26,7 @@ export default function HomeScreen({ navigation }) {
   const [wifiData, setWifiData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
+  const [network, setNetwork] = useState(null);
 
   // --- 2. FETCH DATA FROM BACKEND ---
   const fetchWifiInfo = async () => {
@@ -310,7 +311,7 @@ export default function HomeScreen({ navigation }) {
             </TouchableOpacity>
 
 
-          <TouchableOpacity
+          {/* <TouchableOpacity
             style={styles.card}
             onPress={() => navigation.navigate('NetworkUsage')}
           >
@@ -328,7 +329,7 @@ export default function HomeScreen({ navigation }) {
             </View>
             <Text style={styles.cardTitle}>Devices</Text>
             <Text style={styles.cardSubtitle}>Devices & Usage</Text>
-          </TouchableOpacity>
+          </TouchableOpacity> */}
 
           <TouchableOpacity
             style={styles.card}
