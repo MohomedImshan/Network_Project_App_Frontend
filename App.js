@@ -20,7 +20,7 @@ import UserProfileScreen from './src/screens/User/UserProfile.js';
 import VerificationScreen from './src/screens/User/VerificationScreen.js';
 import EditProfileScreen from './src/screens/User/EditProfileScreen.js';
 import NewPasswordScreen from './src/screens/User/NewPasswordScreen.js';
-
+import NetworkUsage from './src/screens/NetworkUsage.js';
 
 const Stack = createNativeStackNavigator();
 
@@ -29,20 +29,20 @@ function App() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name='Login' component={LoginScreen}/>
-        <Stack.Screen name='Signup' component={SignupScreen}/>
-        <Stack.Screen name='Home' component={HomeScreen}/>
-        <Stack.Screen name='NetworkDetails' component={NetworkDetailsScreen}/>
-        <Stack.Screen name='Devices' component={ConnectedDevicesScreen}/>
+        <Stack.Screen name="Login" component={LoginScreen} />
+        <Stack.Screen name="Signup" component={SignupScreen} />
+        <Stack.Screen name="Home" component={HomeScreen} />
+        <Stack.Screen name="NetworkDetails" component={NetworkDetailsScreen} />
+        <Stack.Screen name="Devices" component={ConnectedDevicesScreen} />
 
-        <Stack.Screen name='Wifi' component={WifiScreen}/>
+        <Stack.Screen name="Wifi" component={WifiScreen} />
 
-        <Stack.Screen name='UserProfile' component={UserProfileScreen}/>
-        <Stack.Screen name='Verification' component={VerificationScreen}/>
-        <Stack.Screen name='EditProfile' component={EditProfileScreen}/>
-        <Stack.Screen name='changePassword' component={NewPasswordScreen}/>
+        <Stack.Screen name="UserProfile" component={UserProfileScreen} />
+        <Stack.Screen name="Verification" component={VerificationScreen} />
+        <Stack.Screen name="EditProfile" component={EditProfileScreen} />
+        <Stack.Screen name="changePassword" component={NewPasswordScreen} />
 
-
+        <Stack.Screen name="NetworkUsage" component={NetworkUsage} />
       </Stack.Navigator>
     </NavigationContainer>
   );
