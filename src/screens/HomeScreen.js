@@ -1,6 +1,5 @@
 
 import React, { useEffect, useState, useCallback } from "react";
-
 import {
   View,
   Text,
@@ -43,109 +42,75 @@ export default function HomeScreen({ navigation }) {
   };
 
   useEffect(() => {
+  // ANDROID PERMISSION
+  const requestPermission = async () => {
+    if (Platform.OS === 'android') {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
+          {
+            title: 'Location Permission Needed',
+            message:
+              'Android requires Location access to show the Wi-Fi Name (SSID).',
+            buttonNegative: 'Cancel',
+            buttonPositive: 'OK',
+          },
+        );
 
-    const initNetwork = async () => {
-      // 1. ANDROID PERMISSION REQUEST
-      if (Platform.OS === 'android') {
-        try {
-          const granted = await PermissionsAndroid.request(
-            PermissionsAndroid.PERMISSIONS.ACCESS_FINE_LOCATION,
-            {
-              title: 'Location Permission Needed',
-              message:
-                'Android requires Location access to show the Wi-Fi Name (SSID).',
-              buttonNegative: 'Cancel',
-              buttonPositive: 'OK',
-            },
-          );
-          if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-            console.log('Location permission granted');
-          } else {
-            console.log('Location permission denied');
-          }
-        } catch (err) {
-          console.warn(err);
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          console.log('Location permission granted');
+        } else {
+          console.log('Location permission denied');
         }
+      } catch (err) {
+        console.warn(err);
       }
+    }
+  };
 
-      // 2. SUBSCRIBE TO NETWORK UPDATES
-      const unsubscribe = NetInfo.addEventListener(state => {
-        setNetwork(state);
-      });
-      return unsubscribe;
-    };
+  requestPermission();
 
-    let unsubscribeFn;
-    initNetwork().then(unsub => {
-      unsubscribeFn = unsub;
-    });
+  // NETWORK LISTENER (SYNC)
+  const unsubscribe = NetInfo.addEventListener(state => {
+    setNetwork(state);
+  });
 
-    return () => {
-      if (unsubscribeFn) unsubscribeFn();
-    };
+  // INITIAL FETCH
+  fetchWifiInfo();
 
-    fetchWifiInfo();
-  }, []);
+  // CLEANUP
+  return () => {
+    unsubscribe();
+  };
+}, []);
 
-  const onRefresh = useCallback(() => {
-    setRefreshing(true);
-    fetchWifiInfo();
-  }, []);
+const onRefresh = useCallback(async () => {
+  setRefreshing(true);
+  await fetchWifiInfo();
+  setRefreshing(false);
+}, []);
 
   // --- HELPERS ---
 
   // Decide card color based on connection
   const getStatusColor = () => {
-
-    if (!network) return '#64748b';
-    return network.isConnected && network.isInternetReachable
-      ? '#10b981'
-      : '#ef4444';
-  };
-
-  const getStatusText = () => {
-    if (!network) return 'Checking...';
-    if (network.isConnected && network.isInternetReachable) return 'Online';
-    if (network.isConnected) return 'No Internet';
-    return 'Disconnected';
-
     if (!wifiData) return "#64748b"; // Grey (Loading/Error)
     if (wifiData.ssid && wifiData.ssid !== "Unknown") return "#3b82f6"; // Blue (Connected)
     return "#ef4444"; // Red (Disconnected)
   };
 
-//   const getStatusText = () => {
-//     if (loading) return "Scanning...";
-//     if (wifiData && wifiData.ssid) return "Connected";
-//     return "Offline";
+  const getStatusText = () => {
+    if (loading) return "Scanning...";
+    if (wifiData && wifiData.ssid) return "Connected";
+    return "Offline";
 
-//   };
+  };
 
   // Get the SSID from backend data
   const getSSID = () => {
-
-    if (!network) return 'Initializing...';
-
-    // Check if Wifi
-    if (network.type === 'wifi') {
-      const ssid = network.details?.ssid;
-      // Android hides SSID if GPS is off, returning "<unknown ssid>"
-      if (!ssid || ssid === '<unknown ssid>') {
-        return 'Unknown (Turn On GPS)';
-      }
-      return ssid;
-    }
-
-    // If connected but NOT wifi (e.g. Emulator uses Ethernet, Phone uses 4G)
-    if (network.isConnected) {
-      return `Not Wi-Fi (${network.type})`;
-    }
-
-    return 'No Connection';
-
-//     if (loading) return "Initializing...";
-//     if (wifiData && wifiData.ssid) return wifiData.ssid;
-//     return "No Connection";
+    if (loading) return "Initializing...";
+    if (wifiData && wifiData.ssid) return wifiData.ssid;
+    return "No Connection";
 
   };
 
@@ -188,10 +153,10 @@ export default function HomeScreen({ navigation }) {
             </View>
           </View>
 
-        </TouchableOpacity>
+     
           {/* DISPLAY THE SMART SSID */}
-          <Text style={styles.statusTitle}>{getSSID()}</Text>
-
+          {/* <Text style={styles.statusTitle}>{getSSID()}</Text> */}
+        {/* </TouchableOpacity>
           <View style={styles.statusRow}>
             <View style={styles.statusItem}>
               <Text style={styles.statusLabel}>Type</Text>
@@ -208,7 +173,7 @@ export default function HomeScreen({ navigation }) {
           </View>
         <View>
           {/* TIP: Click to open Location Settings if needed */}
-          {getSSID() === 'Unknown (Turn On GPS)' && (
+          {/* {getSSID() === 'Unknown (Turn On GPS)' && (
             <TouchableOpacity
               style={{
                 marginTop: 15,
@@ -226,15 +191,15 @@ export default function HomeScreen({ navigation }) {
               </Text>
             </TouchableOpacity>
           )}
-        </View>
+        </View> */}
 
-          <TouchableOpacity>
+         
           {/* DISPLAY THE SSID FROM PYTHON BACKEND */}
           <Text style={styles.statusTitle} numberOfLines={1}>
             {getSSID()}
           </Text>
           
-        </TouchableOpacity>
+        </TouchableOpacity> 
 
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
@@ -260,9 +225,9 @@ export default function HomeScreen({ navigation }) {
             <Text style={styles.cardSubtitle}>Full Analytics</Text>
           </TouchableOpacity>
 
-          {/* <TouchableOpacity
+          <TouchableOpacity
             style={styles.card}
-            onPress={() => navigation.navigate('Devices')}
+            onPress={() => navigation.navigate('NetworkUsage')}
           >
             <View
               style={[
@@ -278,7 +243,7 @@ export default function HomeScreen({ navigation }) {
             </View>
             <Text style={styles.cardTitle}>Devices</Text>
             <Text style={styles.cardSubtitle}>Scan Network</Text>
-          </TouchableOpacity> */}
+          </TouchableOpacity>
 
           <TouchableOpacity
             style={styles.card}
@@ -415,13 +380,14 @@ const styles = StyleSheet.create({
   },
 
   badge: {
+    backgroundColor: '#fff',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 20,
   },
 
   badgeText: {
-    color: '#fff',
+  
     fontWeight: 'bold',
     fontSize: 12,
   },

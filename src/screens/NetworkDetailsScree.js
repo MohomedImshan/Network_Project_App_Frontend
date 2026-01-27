@@ -169,7 +169,7 @@ export default function NetworkDetailsScreen({ navigation }) {
           </View>
 
 
-          <Text style={styles.ssidText}>{info.ssid || 'Unknown Network'}</Text>
+          {/* <Text style={styles.ssidText}>{info.ssid || 'Unknown Network'}</Text>
           <Text style={styles.ipText}>IP: {info.ip || '--'}</Text>
 
           <View style={styles.typeBadge}>
@@ -181,7 +181,7 @@ export default function NetworkDetailsScreen({ navigation }) {
             <Text style={styles.typeText}>
               {info.type?.toUpperCase() || 'UNKNOWN'}
             </Text>
-          </View>
+          </View> */}
 
         </View>
 
