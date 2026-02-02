@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1050215659902",
+    "project_id": "networkmonitoringapp-c127d",
+    "storage_bucket": "networkmonitoringapp-c127d.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1050215659902:android:09075ab9500ade67ab9b2f",
+        "android_client_info": {
+          "package_name": "com.networkapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC8cylJIvXoaGydn6at89jO24YiZzl35O0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
