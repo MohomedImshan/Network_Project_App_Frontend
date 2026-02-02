@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from 'react';
+
 
   import React, { useEffect, useState, useCallback } from "react";
   import {
@@ -24,9 +24,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 
 
 
-// Added for potential profile image
 
-import BackendApi from '../api/BackendApi'; // <--- 1. IMPORT YOUR API
 
 
 
@@ -234,7 +232,7 @@ import BackendApi from '../api/BackendApi'; // <--- 1. IMPORT YOUR API
             </View>
           </View>
 
-     </TouchableOpacity>
+     
           {/* DISPLAY THE SMART SSID */}
           {/* <Text style={styles.statusTitle}>{getSSID()}</Text> */}
         {/* </TouchableOpacity>
@@ -282,7 +280,11 @@ import BackendApi from '../api/BackendApi'; // <--- 1. IMPORT YOUR API
         </View> */}
 
          
-  
+   <Text style={styles.statusTitle} numberOfLines={1}>
+            {getSSID()}
+          </Text>
+          
+        </TouchableOpacity>
 
         <Text style={styles.sectionTitle}>Quick Actions</Text>
 
@@ -346,10 +348,14 @@ import BackendApi from '../api/BackendApi'; // <--- 1. IMPORT YOUR API
             <Text style={styles.cardTitle}>About Wi-Fi</Text>
             <Text style={styles.cardSubtitle}>Hardware Info</Text>
           </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.card}
-            onPress={() => navigation.navigate('DeviceHistory')}
-          >
+          <TouchableOpacity 
+              style={styles.card} 
+              onPress={() =>
+                navigation.navigate("DeviceHistory", {
+                  wifi_id: wifiid,
+                  ssid: wifiData?.ssid
+                })
+              }>
             <View
               style={[
                 styles.iconBox,
