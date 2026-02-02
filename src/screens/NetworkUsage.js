@@ -153,7 +153,7 @@ export default function NetworkUsage() {
 
             <View style={styles.gridItem}>
               <Text style={styles.label}>Sessions</Text>
-              <Text style={styles.value}>{item.sessions}</Text>
+              <Text style={styles.value}>{item.session_count}</Text>
             </View>
           </View>
         )}

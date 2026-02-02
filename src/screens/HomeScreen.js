@@ -1,3 +1,4 @@
+import React, { useEffect, useState, useCallback } from 'react';
 
   import React, { useEffect, useState, useCallback } from "react";
   import {
@@ -23,6 +24,12 @@
 
 
 
+// Added for potential profile image
+
+import BackendApi from '../api/BackendApi'; // <--- 1. IMPORT YOUR API
+
+
+
 
   const { width } = Dimensions.get('window');
 
@@ -40,6 +47,7 @@
 
     const toggleNotifications = () => {
     setShowNotification(prev => !prev);
+
   };
     const fetchWifiInfo = async () => {
       try {
@@ -202,173 +210,163 @@
       </View>
 
 
+
         <ScrollView 
           showsVerticalScrollIndicator={false}
           refreshControl={
             <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor="#3b82f6"/>
           }
         >
-          
-
-          {/* MAIN STATUS CARD */}
-          <TouchableOpacity 
-            activeOpacity={0.9} 
-            onPress={fetchWifiInfo} // Tap card to refresh
-            style={[styles.statusCard, { backgroundColor: getStatusColor() }]}
-          >
-            <View style={styles.statusHeader}>
-              <MaterialCommunityIcons name="wifi" size={32} color="#fff" />
-              <View style={styles.badge}>
-                <Text style={[styles.badgeText, { color: getStatusColor() }]}>{getStatusText()}</Text>
-              </View>
-            </View>
 
       
-            {/* DISPLAY THE SMART SSID */}
-            {/* <Text style={styles.statusTitle}>{getSSID()}</Text> */}
-          {/* </TouchableOpacity>
-            <View style={styles.statusRow}>
-              <View style={styles.statusItem}>
-                <Text style={styles.statusLabel}>Type</Text>
-                <Text style={styles.statusValue}>
-                  {network?.type?.toUpperCase() || '--'}
-                </Text>
-              </View>
-              <View style={styles.statusItem}>
-                <Text style={styles.statusLabel}>Internet</Text>
-                <Text style={styles.statusValue}>
-                  {network?.isInternetReachable ? 'Reachable' : 'Unreachable'}
-                </Text>
-              </View>
+        {/* MAIN STATUS CARD */}
+        <TouchableOpacity
+          activeOpacity={0.9}
+          onPress={fetchWifiInfo} // Tap card to refresh
+          style={[styles.statusCard, { backgroundColor: getStatusColor() }]}
+        >
+          <View style={styles.statusHeader}>
+            <MaterialCommunityIcons name="wifi" size={32} color="#fff" />
+            <View style={styles.badge}>
+              <Text style={[styles.badgeText, { color: getStatusColor() }]}>
+                {getStatusText()}
+              </Text>
             </View>
-          <View>
-            {/* TIP: Click to open Location Settings if needed */}
-            {/* {getSSID() === 'Unknown (Turn On GPS)' && (
-              <TouchableOpacity
-                style={{
-                  marginTop: 15,
-                  backgroundColor: 'rgba(0,0,0,0.2)',
-                  padding: 10,
-                  borderRadius: 8,
-                  alignItems: 'center',
-                }}
-                onPress={() =>
-                  Linking.sendIntent('android.settings.LOCATION_SOURCE_SETTINGS')
-                }
-              >
-                <Text style={{ color: '#fff', fontSize: 12 }}>
-                  Tap to Open Location Settings
-                </Text>
-              </TouchableOpacity>
-            )}
-          </View> */}
+          </View>
+
+     </TouchableOpacity>
+          {/* DISPLAY THE SMART SSID */}
+          {/* <Text style={styles.statusTitle}>{getSSID()}</Text> */}
+        {/* </TouchableOpacity>
+          <View style={styles.statusRow}>
+            <View style={styles.statusItem}>
+              <Text style={styles.statusLabel}>Type</Text>
+              <Text style={styles.statusValue}>
+                {network?.type?.toUpperCase() || '--'}
+              </Text>
+            </View>
+            <View style={styles.statusItem}>
+              <Text style={styles.statusLabel}>Internet</Text>
+              <Text style={styles.statusValue}>
+                {network?.isInternetReachable ? 'Reachable' : 'Unreachable'}
+              </Text>
+            </View>
+          </View>
+          <View style={styles.statusItem}>
+            <Text style={styles.statusLabel}>Internet</Text>
+            <Text style={styles.statusValue}>
+              {network?.isInternetReachable ? 'Reachable' : 'Unreachable'}
+            </Text>
+          </View>
+        </View>
+        <View>
+          {/* TIP: Click to open Location Settings if needed */}
+          {/* {getSSID() === 'Unknown (Turn On GPS)' && (
+            <TouchableOpacity
+              style={{
+                marginTop: 15,
+                backgroundColor: 'rgba(0,0,0,0.2)',
+                padding: 10,
+                borderRadius: 8,
+                alignItems: 'center',
+              }}
+              onPress={() =>
+                Linking.sendIntent('android.settings.LOCATION_SOURCE_SETTINGS')
+              }
+            >
+              <Text style={{ color: '#fff', fontSize: 12 }}>
+                Tap to Open Location Settings
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View> */}
+
+         
+  
+
+        <Text style={styles.sectionTitle}>Quick Actions</Text>
+
+        <View style={styles.gridContainer}>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('NetworkDetails')}
+          >
+            <View
+              style={[
+                styles.iconBox,
+                { backgroundColor: 'rgba(59, 130, 246, 0.2)' },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="chart-box-outline"
+                size={28}
+                color="#3b82f6"
+              />
+            </View>
+            <Text style={styles.cardTitle}>Network Details</Text>
+            <Text style={styles.cardSubtitle}>Full Analytics</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('NetworkUsage')}
+          >
+            <View
+              style={[
+                styles.iconBox,
+                { backgroundColor: 'rgba(245, 158, 11, 0.2)' },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="devices"
+                size={28}
+                color="#f59e0b"
+              />
+            </View>
+            <Text style={styles.cardTitle}>Devices</Text>
+            <Text style={styles.cardSubtitle}>Scan Network</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('Wifi')}
+          >
+            <View
+              style={[
+                styles.iconBox,
+                { backgroundColor: 'rgba(16, 185, 129, 0.2)' },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="information-outline"
+                size={28}
+                color="#10b981"
+              />
+            </View>
+            <Text style={styles.cardTitle}>About Wi-Fi</Text>
+            <Text style={styles.cardSubtitle}>Hardware Info</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('DeviceHistory')}
+          >
+            <View
+              style={[
+                styles.iconBox,
+                { backgroundColor: 'rgba(236, 72, 153, 0.2)' },
+              ]}
+            >
+              <MaterialCommunityIcons
+                name="history"
+                size={28}
+                color="#ec4899"
+              />
+            </View>
+            <Text style={styles.cardTitle}>Device History</Text>
+            <Text style={styles.cardSubtitle}>Last 30 Days</Text>
+          </TouchableOpacity>
 
           
-            {/* DISPLAY THE SSID FROM PYTHON BACKEND */}
-            <Text style={styles.statusTitle} numberOfLines={1}>
-              {getSSID()}
-            </Text>
-            
-          </TouchableOpacity> 
-
-
-          <Text style={styles.sectionTitle}>Quick Actions</Text>
-
-          <View style={styles.gridContainer}>
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('NetworkDetails')}
-            >
-              <View
-                style={[
-                  styles.iconBox,
-                  { backgroundColor: 'rgba(59, 130, 246, 0.2)' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="chart-box-outline"
-                  size={28}
-                  color="#3b82f6"
-                />
-              </View>
-              <Text style={styles.cardTitle}>Network Details</Text>
-              <Text style={styles.cardSubtitle}>Full Analytics</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('NetworkUsage')}
-            >
-              <View
-                style={[
-                  styles.iconBox,
-                  { backgroundColor: 'rgba(245, 158, 11, 0.2)' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="devices"
-                  size={28}
-                  color="#f59e0b"
-                />
-              </View>
-              <Text style={styles.cardTitle}>Devices</Text>
-              <Text style={styles.cardSubtitle}>Scan Network</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('Wifi')}
-            >
-              <View
-                style={[
-                  styles.iconBox,
-                  { backgroundColor: 'rgba(16, 185, 129, 0.2)' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="information-outline"
-                  size={28}
-                  color="#10b981"
-                />
-              </View>
-              <Text style={styles.cardTitle}>About Wi-Fi</Text>
-              <Text style={styles.cardSubtitle}>Hardware Info</Text>
-            </TouchableOpacity>
-            <TouchableOpacity 
-                style={styles.card} 
-                onPress={() =>
-                    navigation.navigate("DeviceHistory", {
-                      wifi_id: wifiid,
-                      ssid: wifiData?.ssid
-                    })
-                  }>
-
-                <View style={[styles.iconBox, { backgroundColor: "rgba(236, 72, 153, 0.2)" }]}>
-                  <MaterialCommunityIcons name="history" size={28} color="#ec4899" />
-                </View>
-                <Text style={styles.cardTitle}>Device History</Text>
-                <Text style={styles.cardSubtitle}>Last 30 Days</Text>
-              </TouchableOpacity>
-                  
-            {/* <TouchableOpacity
-              style={styles.card}
-              onPress={() => navigation.navigate('NetworkUsage')}
-            >
-              <View
-                style={[
-                  styles.iconBox,
-                  { backgroundColor: 'rgba(59, 130, 246, 0.2)' },
-                ]}
-              >
-                <MaterialCommunityIcons
-                  name="devices"
-                  size={28}
-                  color="#f59e0b"
-                />
-              </View>
-              <Text style={styles.cardTitle}>Devices</Text>
-              <Text style={styles.cardSubtitle}>Devices & Usage</Text>
-            </TouchableOpacity> */}
 
             <TouchableOpacity
               style={styles.card}
@@ -395,14 +393,14 @@
     );
   }
 
-  const styles = StyleSheet.create({
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#0f172a',
+    paddingTop: 40,
+    paddingHorizontal: 20,
+  },
 
-    container: {
-      flex: 1,
-      backgroundColor: '#0f172a',
-      paddingTop: 40,
-      paddingHorizontal: 20,
-    },
 
     header: {
       flexDirection: 'row',
@@ -555,4 +553,5 @@
     notifTitle: { color: "#fff", fontWeight: "bold" },
     notifBody: { color: "#94a3b8", marginTop: 2 },
   });
+
 
