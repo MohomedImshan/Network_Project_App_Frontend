@@ -20,7 +20,7 @@ import EditProfileScreen from './src/screens/User/EditProfileScreen.js';
 import NewPasswordScreen from './src/screens/User/NewPasswordScreen.js';
 import DeviceHistoryScreen from './src/screens/DeviceHistoryScreen.js';
 import NetworkUsage from './src/screens/NetworkUsage.js';
-
+import SiteVisits from './src/screens/Sitevisited.js';
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -98,6 +98,7 @@ function App() {
         <Stack.Screen name="EditProfile" component={EditProfileScreen} />
         <Stack.Screen name="changePassword" component={NewPasswordScreen} />
         <Stack.Screen name="NetworkUsage" component={NetworkUsage} />
+        <Stack.Screen name="SiteVisits" component={SiteVisits} />
       </Stack.Navigator>
     </NavigationContainer>
   );
