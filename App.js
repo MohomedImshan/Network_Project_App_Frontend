@@ -20,7 +20,8 @@ import EditProfileScreen from './src/screens/User/EditProfileScreen.js';
 import NewPasswordScreen from './src/screens/User/NewPasswordScreen.js';
 import DeviceHistoryScreen from './src/screens/DeviceHistoryScreen.js';
 import NetworkUsage from './src/screens/NetworkUsage.js';
-import SiteVisits from './src/screens/Sitevisited.js';
+import DeviceDetails from './src/screens/DeviceDetails.js';
+import SiteVisits from './src/screens/SiteVisits.js';
 const Stack = createNativeStackNavigator();
 
 function App() {
@@ -46,16 +47,21 @@ function App() {
       console.log('Foreground message received:', remoteMessage);
       Alert.alert(
         remoteMessage.notification?.title ?? 'Notification',
-        remoteMessage.notification?.body ?? ''
+        remoteMessage.notification?.body ?? '',
       );
     });
 
     // Background notification (app opened from background)
-    const unsubscribeBackground = messaging().onNotificationOpenedApp(remoteMessage => {
-      console.log('Background notification tapped:', remoteMessage.notification);
-      // Navigate to screen if needed
-      // e.g., navigation.navigate('Home');
-    });
+    const unsubscribeBackground = messaging().onNotificationOpenedApp(
+      remoteMessage => {
+        console.log(
+          'Background notification tapped:',
+          remoteMessage.notification,
+        );
+        // Navigate to screen if needed
+        // e.g., navigation.navigate('Home');
+      },
+    );
 
     // App opened from quit state
     messaging()
@@ -99,6 +105,7 @@ function App() {
         <Stack.Screen name="changePassword" component={NewPasswordScreen} />
         <Stack.Screen name="NetworkUsage" component={NetworkUsage} />
         <Stack.Screen name="SiteVisits" component={SiteVisits} />
+        <Stack.Screen name="DeviceDetails" component={DeviceDetails} />
       </Stack.Navigator>
     </NavigationContainer>
   );
