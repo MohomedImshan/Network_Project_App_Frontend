@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   View,
   Text,
@@ -7,27 +7,22 @@ import {
   ActivityIndicator,
   RefreshControl,
   TouchableOpacity,
-  Animated,
-  Easing,
 } from 'react-native';
 import BackendApi from '../api/BackendApi';
-import MaterialIcons from 'react-native-vector-icons/MaterialIcons'; // or '@expo/vector-icons'
 
-export default function NetworkUsage({navigation}) {
+export default function NetworkUsage({ navigation }) {
   const [devices, setDevices] = useState([]);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedDevice, setExpandedDevice] = useState(null);
-
-  // Keep animated values per device id for arrow rotation
-  const rotationAnimations = useRef({}).current;
 
   const fetchUsage = async () => {
     try {
       setLoading(true);
       const res = await BackendApi.get('/network-usage/deviceUsage');
+
       const payload = res.data?.devices ? res.data : res.data?.data;
       setDevices(payload?.devices || []);
+
       console.log('Fetched network usage:', payload);
     } catch (err) {
       console.error('Network usage fetch error:', err);
@@ -46,129 +41,22 @@ export default function NetworkUsage({navigation}) {
     fetchUsage();
   };
 
-  const toggleExpand = id => {
-    if (!rotationAnimations[id]) {
-      rotationAnimations[id] = new Animated.Value(0);
-    }
-
-    if (expandedDevice === id) {
-      // collapse
-      Animated.timing(rotationAnimations[id], {
-        toValue: 0,
-        duration: 200,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start();
-      setExpandedDevice(null);
-    } else {
-      // collapse previously opened arrow first
-      if (expandedDevice && rotationAnimations[expandedDevice]) {
-        Animated.timing(rotationAnimations[expandedDevice], {
-          toValue: 0,
-          duration: 200,
-          easing: Easing.ease,
-          useNativeDriver: true,
-        }).start();
-      }
-      // expand new arrow
-      Animated.timing(rotationAnimations[id], {
-        toValue: 1,
-        duration: 200,
-        easing: Easing.ease,
-        useNativeDriver: true,
-      }).start();
-      setExpandedDevice(id);
-    }
-  };
-
   const renderItem = ({ item }) => {
-    const id = item.id || item.mac;
-    const isExpanded = expandedDevice === id;
-
-    if (!rotationAnimations[id]) {
-      rotationAnimations[id] = new Animated.Value(isExpanded ? 1 : 0);
-    }
-
-    const rotateInterpolate = rotationAnimations[id].interpolate({
-      inputRange: [0, 1],
-      outputRange: ['0deg', '180deg'], // arrow points down when expanded
-    });
-
     return (
       <TouchableOpacity
-        onPress={() => toggleExpand(id)}
-        activeOpacity={0.8}
         style={styles.card}
+        activeOpacity={0.8}
+        onPress={() =>
+          navigation.navigate('DeviceDetails', { device: item })
+        }
       >
-        <View style={styles.cardHeader}>
-          <View style={{ flex: 1 }}>
-            <Text style={styles.deviceName}>
-              {item.device_name !== 'Unknown'
-                ? item.device_name
-                : `Device (${item.mac.slice(-5)})`}
-            </Text>
-            <Text style={styles.deviceIp}>{item.ip}</Text>
-          </View>
-          <Animated.View style={{ transform: [{ rotate: rotateInterpolate }] }}>
-            <MaterialIcons
-              name="keyboard-arrow-down"
-              size={28}
-              color="#94a3b8"
-            />
-          </Animated.View>
-        </View>
+        <Text style={styles.deviceName}>
+          {item.device_name !== 'Unknown'
+            ? item.device_name
+            : `Device (${item.mac.slice(-5)})`}
+        </Text>
 
-        {isExpanded && (
-          <View style={styles.detailsGrid}>
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>IP</Text>
-              <Text style={styles.value}>{item.ip}</Text>
-            </View>
-
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>MAC</Text>
-              <Text style={styles.value}>{item.mac}</Text>
-            </View>
-
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>Download</Text>
-              <Text style={styles.value}>
-                {item.download_mb?.toFixed(2)} MB
-              </Text>
-            </View>
-
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>Upload</Text>
-              <Text style={styles.value}>{item.upload_mb?.toFixed(2)} MB</Text>
-            </View>
-
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>Packets Sent</Text>
-              <Text style={styles.value}>{item.packets_sent}</Text>
-            </View>
-
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>Packets Received</Text>
-              <Text style={styles.value}>{item.packets_recv}</Text>
-            </View>
-
-            <View style={styles.gridItem}>
-              <Text style={styles.label}>Sessions</Text>
-              <Text style={styles.value}>{item.session_count}</Text>
-            </View>
-            <TouchableOpacity
-                  style={styles.visitButton}
-                  onPress={() =>
-                    navigation.navigate('SiteVisits', {
-                      mac: item.mac,
-                      deviceName: item.device_name,
-                    })
-                  }
-                >
-  <Text style={styles.visitButtonText}>View Site Visits</Text>
-</TouchableOpacity>
-          </View>
-        )}
+        <Text style={styles.deviceIp}>{item.ip}</Text>
       </TouchableOpacity>
     );
   };
@@ -218,27 +106,14 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginBottom: 20,
     fontWeight: 'bold',
-    letterSpacing: 0.5,
   },
 
   card: {
     backgroundColor: '#1e293b',
-    padding: 16,
+    padding: 18,
     borderRadius: 14,
     marginBottom: 14,
-    shadowColor: '#000',
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 6,
-  },
-
-  cardHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 12,
-    borderBottomWidth: 1,
-    borderBottomColor: '#334155',
-    paddingBottom: 8,
+    elevation: 5,
   },
 
   deviceName: {
@@ -249,20 +124,8 @@ const styles = StyleSheet.create({
 
   deviceIp: {
     color: '#94a3b8',
-    fontSize: 12,
-    marginTop: 2,
-  },
-
-  label: {
-    color: '#94a3b8',
-    fontSize: 11,
-    marginBottom: 2,
-  },
-
-  value: {
-    color: '#e5e7eb',
-    fontSize: 15,
-    fontWeight: '600',
+    fontSize: 13,
+    marginTop: 4,
   },
 
   center: {
@@ -271,30 +134,4 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#0f172a',
   },
-
-  detailsGrid: {
-    marginTop: 10,
-    flexDirection: 'column',
-  },
-
-  gridItem: {
-    width: '100%',
-    backgroundColor: '#273549',
-    padding: 14,
-    borderRadius: 10,
-    marginBottom: 10,
-  },
-  visitButton: {
-  marginTop: 10,
-  backgroundColor: '#3b82f6',
-  paddingVertical: 12,
-  borderRadius: 10,
-  alignItems: 'center',
-},
-
-visitButtonText: {
-  color: '#fff',
-  fontWeight: 'bold',
-  fontSize: 14,
-},
 });
