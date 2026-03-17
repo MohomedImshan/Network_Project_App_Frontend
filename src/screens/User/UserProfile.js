@@ -9,37 +9,37 @@ import {
   ScrollView,
   TouchableOpacity,
   Alert,
-  Image,
+  ActivityIndicator,
 } from 'react-native';
-import BackendApi from '../../api/BackendApi';
-import { ActivityIndicator } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import BackendApi from '../../api/BackendApi';
 
-const UserProfile = ({ navigation}) => {
-    const [userData, setUserData] = useState({firstName: '', lastName: '', email: ''});
-    const [isLoading, setIsLoading] = useState(true);
+const UserProfile = ({ navigation }) => {
+  const [userData, setUserData] = useState({ firstName: '', lastName: '', email: '' });
+  const [isLoading, setIsLoading] = useState(true);
 
-    useFocusEffect(
-        useCallback(() => {
-            fetchUserDetails();
-        }, [])
-    );
+  useFocusEffect(
+    useCallback(() => {
+      fetchUserDetails();
+    }, [])
+  );
 
-
-  const fetchUserDetails = async() => {
-    try{
-        const userDetailsResponse = await BackendApi.get('/user/profile');
-        setUserData({
-            firstName: userDetailsResponse.data.firstName,
-            lastName: userDetailsResponse.data.lastName,
-            email: userDetailsResponse.data.email
-        });
-        setIsLoading(false);
-        
-    }catch(error){
-        Alert.alert('Error', 'Failed to fetch user details.');
+  const fetchUserDetails = async () => {
+    try {
+      const userDetailsResponse = await BackendApi.get('/user/profile');
+      setUserData({
+        firstName: userDetailsResponse.data.firstName,
+        lastName: userDetailsResponse.data.lastName,
+        email: userDetailsResponse.data.email,
+        role: userDetailsResponse.data.role || 'Network Admin'
+      });
+      setIsLoading(false);
+    } catch (error) {
+      Alert.alert('Error', 'Failed to fetch user details.');
+      setIsLoading(false);
     }
-  }
+  };
 
   const handleEditProfile = () => {
     navigation.navigate('EditProfile', { userData });
@@ -51,92 +51,119 @@ const UserProfile = ({ navigation}) => {
       'Are you sure you want to disconnect?',
       [
         { text: 'Cancel', style: 'cancel' },
-        { text: 'Logout', style: 'destructive', onPress: async() => {
-          await AsyncStorage.removeItem('token');
-          navigation.reset({
-            index: 0,
-            routes: [{ name: 'Login' }],
-          });
-        }},
+        {
+          text: 'Logout',
+          style: 'destructive',
+          onPress: async () => {
+            await AsyncStorage.removeItem('token');
+            navigation.reset({
+              index: 0,
+              routes: [{ name: 'Login' }],
+            });
+          },
+        },
       ]
     );
   };
 
+  // Helper to get initials
+  const getInitials = () => {
+    return `${userData.firstName.charAt(0)}${userData.lastName.charAt(0)}`.toUpperCase() || '??';
+  };
+
   if (isLoading) {
-      return (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color="#2563eb" />
-          <Text style={{ color: "#fff", marginTop: 10 }}>Scanning network...</Text>
-        </View>
-      );
-    }
+    return (
+      <View style={styles.loaderCenter}>
+        <ActivityIndicator size="large" color="#4c6ef5" />
+        <Text style={styles.loaderText}>Syncing Profile...</Text>
+      </View>
+    );
+  }
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="light-content" backgroundColor="#0f172a" />
-      
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        <View style={styles.header}>
-          <View style={styles.avatarContainer}>
-            <Text style={styles.avatarText}>AS</Text>
-            <View style={styles.onlineBadge} />
+      <StatusBar barStyle="light-content" backgroundColor="#1a1c2e" />
+
+      {/* CUSTOM NAVIGATION HEADER */}
+      <View style={styles.navHeader}>
+        <TouchableOpacity style={styles.navButton} onPress={() => navigation.goBack()}>
+          <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
+        </TouchableOpacity>
+        <Text style={styles.navTitle}>Account Settings</Text>
+        <View style={{ width: 42 }} /> 
+      </View>
+
+      <ScrollView showsVerticalScrollIndicator={false} contentContainerStyle={styles.scrollContent}>
+        
+        {/* PROFILE CARD */}
+        <View style={styles.profileHeader}>
+          <View style={styles.avatarGlow}>
+            <View style={styles.avatarContainer}>
+              <Text style={styles.avatarText}>{getInitials()}</Text>
+            </View>
+            <View style={styles.onlineStatus} />
           </View>
           <Text style={styles.userName}>{userData.firstName} {userData.lastName}</Text>
-          <Text style={styles.userRole}>{userData.role}</Text>
+          <View style={styles.roleBadge}>
+            <Text style={styles.roleText}>{userData.role.toUpperCase()}</Text>
+          </View>
         </View>
 
         <View style={styles.infoSection}>
-          <Text style={styles.sectionTitle}>CONTACT DETAILS</Text>
-          <View style={styles.infoCard}>
-            <View style={styles.iconContainer}>
-              <Text style={styles.icon}>👤</Text>
+          <Text style={styles.sectionTitle}>PERSONAL INFORMATION</Text>
+          
+          <View style={styles.card}>
+            <View style={styles.infoRow}>
+              <View style={styles.iconCircle}>
+                <MaterialCommunityIcons name="account-outline" size={22} color="#12a8e4" />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Full Name</Text>
+                <Text style={styles.infoValue}>{userData.firstName} {userData.lastName}</Text>
+              </View>
             </View>
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>Full Name</Text>
-              <Text style={styles.infoValue}>{userData.firstName} {userData.lastName}</Text>
+
+            <View style={styles.divider} />
+
+            <View style={styles.infoRow}>
+              <View style={styles.iconCircle}>
+                <MaterialCommunityIcons name="email-outline" size={22} color="#12a8e4" />
+              </View>
+              <View style={styles.infoContent}>
+                <Text style={styles.infoLabel}>Email Address</Text>
+                <Text style={styles.infoValue}>{userData.email}</Text>
+              </View>
             </View>
           </View>
 
-          <View style={styles.infoCard}>
-            <View style={styles.iconContainer}>
-              <Text style={styles.icon}>✉️</Text>
-            </View>
-            <View style={styles.infoTextContainer}>
-              <Text style={styles.infoLabel}>Email Address</Text>
-              <Text style={styles.infoValue}>{userData.email}</Text>
-            </View>
-          </View>
-
+          <Text style={styles.sectionTitle}>SECURITY & ACCESS</Text>
+          
           <TouchableOpacity 
-            style={styles.securityActionCard} 
-            onPress={() => navigation.navigate('Verification', { email: userData.email, flow: "changePassword" })}
+            style={styles.securityCard} 
             activeOpacity={0.7}
-            >
-            <View style={styles.iconContainer}>
-                <Text style={styles.icon}>🔒</Text>
-            </View>
-            <View style={styles.infoTextContainer}>
-                <Text style={styles.infoLabel}>Security</Text>
-                <Text style={styles.actionText}>Change Password</Text>
-            </View>
-            <Text style={styles.arrowIcon}>→</Text>
-        </TouchableOpacity>
-        </View>
-        <View style={styles.actionSection}>
-          <TouchableOpacity 
-            style={styles.editBtn} 
-            onPress={handleEditProfile}
-            activeOpacity={0.8}
+            onPress={() => navigation.navigate('Verification', { email: userData.email, flow: "changePassword" })}
           >
-            <Text style={styles.editBtnText}>EDIT PROFILE DETAILS</Text>
+            <View style={styles.iconCircle}>
+              <MaterialCommunityIcons name="shield-lock-outline" size={22} color="#12a8e4" />
+            </View>
+            <View style={styles.infoContent}>
+              <Text style={styles.infoLabel}>Account Security</Text>
+              <Text style={styles.securityValue}>Update Password</Text>
+            </View>
+            <MaterialCommunityIcons name="chevron-right" size={24} color="#66aac5" />
+          </TouchableOpacity>
+        </View>
+
+        {/* ACTIONS */}
+        <View style={styles.buttonSection}>
+          <TouchableOpacity style={styles.editBtn} onPress={handleEditProfile}>
+            <MaterialCommunityIcons name="account-edit" size={20} color="#fff" style={{marginRight: 8}} />
+            <Text style={styles.editBtnText}>EDIT PROFILE</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
-            style={styles.logoutBtn} 
-            onPress={handleLogout}
-            activeOpacity={0.8}
-          >
-            <Text style={styles.logoutBtnText}>LOGOUT</Text>
+          <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout}>
+            <MaterialCommunityIcons name="logout-variant" size={20} color="#ef4444" style={{marginRight: 8}} />
+            <Text style={styles.logoutBtnText}>Log Out</Text>
           </TouchableOpacity>
         </View>
 
@@ -148,168 +175,203 @@ const UserProfile = ({ navigation}) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#0f172a',
+    backgroundColor: "#1a1c2e",
+  },
+  navHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingVertical: 40,
+  },
+  navButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: 'rgba(145, 20, 20, 0.06)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navTitle: {
+    color: '#fff',
+    fontSize: 19,
+    fontWeight: '800',
   },
   scrollContent: {
-    paddingBottom: 40,
+    paddingBottom: 30,
   },
-  header: {
+  profileHeader: {
     alignItems: 'center',
-    paddingVertical: 40,
-    backgroundColor: '#1e293b',
-    borderBottomLeftRadius: 30,
-    borderBottomRightRadius: 30,
-    marginBottom: 30,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
+    paddingVertical: 30,
+  },
+  avatarGlow: {
+    padding: 4,
+    borderRadius: 60,
+    borderWidth: 2,
+    borderColor: 'rgba(76, 110, 245, 0.3)',
+    marginBottom: 15,
   },
   avatarContainer: {
     width: 100,
     height: 100,
     borderRadius: 50,
-    backgroundColor: '#334155',
+    backgroundColor: '#e8e9f3',
     justifyContent: 'center',
     alignItems: 'center',
-    marginBottom: 15,
-    borderWidth: 2,
-    borderColor: '#38bdf8',
-    position: 'relative',
+    borderWidth: 1,
+    borderColor: 'rgba(236, 215, 215, 0.1)',
   },
   avatarText: {
-    fontSize: 36,
-    fontWeight: 'bold',
-    color: '#f8fafc',
+    fontSize: 34,
+    fontWeight: '900',
+    color: '#66aac5',
+    letterSpacing: 2,
   },
-  onlineBadge: {
-    width: 20,
-    height: 20,
-    backgroundColor: '#22c55e',
-    borderRadius: 10,
+  onlineStatus: {
+    width: 18,
+    height: 18,
+    backgroundColor: '#10b981',
+    borderRadius: 9,
     position: 'absolute',
     bottom: 5,
     right: 5,
     borderWidth: 3,
-    borderColor: '#1e293b',
+    borderColor: '#1a1c2e',
   },
   userName: {
     fontSize: 24,
-    fontWeight: 'bold',
-    color: '#f1f5f9',
-    marginBottom: 5,
+    fontWeight: '800',
+    color: '#fff',
+    marginBottom: 8,
   },
-  userRole: {
-    fontSize: 14,
-    color: '#38bdf8',
-    letterSpacing: 1,
-    fontWeight: '600',
+  roleBadge: {
+    backgroundColor: '#66aac5)',
+    paddingHorizontal: 16,
+    paddingVertical: 5,
+    borderRadius: 20,
   },
-
+  roleText: {
+    color: '#66aac5',
+    fontSize: 11,
+    fontWeight: '900',
+    letterSpacing: 1.5,
+  },
   infoSection: {
-    paddingHorizontal: 25,
+    paddingHorizontal: 20,
+    marginTop: 10,
   },
   sectionTitle: {
-    color: '#94a3b8',
+    color: '#66aac5',
     fontSize: 12,
-    fontWeight: 'bold',
+    fontWeight: '900',
     marginBottom: 15,
-    letterSpacing: 1,
+    marginTop: 20,
+    letterSpacing: 1.2,
   },
-  infoCard: {
-    flexDirection: 'row',
-    backgroundColor: '#1e293b',
-    padding: 15,
-    borderRadius: 16,
-    marginBottom: 15,
-    alignItems: 'center',
+  card: {
+    backgroundColor: '#1e2136',
+    borderRadius: 22,
+    padding: 18,
     borderWidth: 1,
-    borderColor: '#334155',
+    borderColor: '#66aac5',
   },
-  iconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: 'rgba(56, 189, 248, 0.1)',
+  infoRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  iconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 14,
+    backgroundColor: 'rgba(76, 110, 245, 0.1)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 15,
   },
-  icon: {
-    fontSize: 20,
-  },
-  infoTextContainer: {
+  infoContent: {
     flex: 1,
   },
   infoLabel: {
+    color: '#5c6370',
     fontSize: 12,
-    color: '#94a3b8',
+    fontWeight: '600',
     marginBottom: 2,
   },
   infoValue: {
-    fontSize: 16,
-    color: '#f1f5f9',
-    fontWeight: '500',
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '700',
   },
-  actionSection: {
-    paddingHorizontal: 25,
-    marginTop: 20,
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255,255,255,0.06)',
+    marginVertical: 15,
+    marginLeft: 60,
+  },
+  securityCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgba(76, 110, 245, 0.05)',
+    padding: 16,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: '#66aac5',
+  },
+  securityValue: {
+    color: '#ffffff',
+    fontSize: 15,
+    fontWeight: '800',
+  },
+  buttonSection: {
+    paddingHorizontal: 20,
+    marginTop: 35,
   },
   editBtn: {
-    backgroundColor: '#38bdf8',
-    height: 55,
-    borderRadius: 12,
+    backgroundColor: '#1ba3c5',
+    height: 56,
+    borderRadius: 16,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
     marginBottom: 15,
-    shadowColor: '#38bdf8',
-    shadowOffset: { width: 0, height: 4 },
+    shadowColor: '#4c6ef5',
     shadowOpacity: 0.3,
-    shadowRadius: 4.65,
-    elevation: 8,
+    shadowRadius: 10,
+    elevation: 5,
   },
   editBtnText: {
-    color: '#0f172a',
-    fontSize: 16,
-    fontWeight: 'bold',
+    color: '#fff',
+    fontSize: 15,
+    fontWeight: '900',
     letterSpacing: 1,
   },
   logoutBtn: {
-    height: 55,
-    borderRadius: 12,
+    height: 56,
+    borderRadius: 16,
+    flexDirection: 'row',
     justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#ef4444',
-    backgroundColor: 'rgba(239, 68, 68, 0.1)',
+    borderWidth: 1.5,
+    borderColor: 'rgba(239, 68, 68, 0.3)',
+    backgroundColor: 'rgba(239, 68, 68, 0.05)',
   },
   logoutBtnText: {
     color: '#ef4444',
-    fontSize: 16,
-    fontWeight: 'bold',
-    letterSpacing: 1,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 0.5,
   },
-  securityActionCard: {
-    flexDirection: 'row',
-    backgroundColor: 'rgba(56, 189, 248, 0.05)',
-    padding: 15,
-    borderRadius: 16,
-    marginBottom: 15,
+  loaderCenter: {
+    flex: 1,
+    backgroundColor: '#1a1c2e',
+    justifyContent: 'center',
     alignItems: 'center',
-    borderWidth: 1,
-    borderColor: '#38bdf8',
-    },
-    actionText: {
-    fontSize: 16,
-    color: '#38bdf8', 
-    fontWeight: 'bold',
-    },
-    arrowIcon: {
-    color: '#38bdf8',
-    fontSize: 20,
-    fontWeight: 'bold',
-    }
+  },
+  loaderText: {
+    color: '#adb5bd',
+    marginTop: 15,
+    fontWeight: '600',
+  }
 });
 
 export default UserProfile;

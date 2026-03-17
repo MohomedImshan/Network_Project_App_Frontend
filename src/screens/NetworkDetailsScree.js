@@ -382,87 +382,274 @@ const DetailRow = ({ icon, label, value, color }) => (
 );
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#0f172a' },
-  header: {
-    flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
-    paddingHorizontal: 20, paddingVertical: 30, backgroundColor: '#0f172a',
-    borderBottomWidth: 1, borderBottomColor: '#1e293b',
+  container: { flex: 1, 
+    backgroundColor: '#0f172a' 
   },
-  backButton: { padding: 8, borderRadius: 12, backgroundColor: '#1e293b' },
-  headerTitle: { fontSize: 18, fontWeight: 'bold', color: '#fff' },
-  refreshButton: { padding: 8 },
-  scrollContent: { padding: 20, paddingBottom: 40 },
+
+  header: {
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    justifyContent: 'space-between',
+    paddingHorizontal: 20, 
+    paddingVertical: 40, 
+    backgroundColor: '#0f172a',
+    borderBottomWidth: 1, 
+    borderBottomColor: '#1e293b',
+  },
+
+  backButton: { padding: 8, 
+    borderRadius: 12, 
+    backgroundColor: '#1e293b' 
+  },
+
+  headerTitle: { fontSize: 25, 
+    fontWeight: 'bold', 
+    color: '#fff' 
+  },
+
+  refreshButton: { padding: 8 
+
+  },
+
+  scrollContent: { padding: 20, 
+    paddingBottom: 40 
+  },
   
   // MAIN CARD STYLES
   mainCard: {
-    backgroundColor: '#3b82f6', borderRadius: 24, padding: 24, alignItems: 'center',
-    marginBottom: 24, shadowColor: '#3b82f6', shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.3, shadowRadius: 15, elevation: 10,
+    backgroundColor: '#3b82f6', 
+    borderRadius: 24, 
+    padding: 24, 
+    alignItems: 'center',
+    marginBottom: 24, 
+    shadowColor: '#3b82f6', 
+    shadowOffset: { width: 0, height: 10},
+    shadowOpacity: 0.3, 
+    shadowRadius: 15, 
+    elevation: 10,
   },
+
   connectionBadge: {
-    flexDirection: 'row', alignItems: 'center', backgroundColor: 'rgba(0,0,0,0.2)',
-    paddingHorizontal: 12, paddingVertical: 6, borderRadius: 20, marginBottom: 12,
+    flexDirection: 'row', 
+    alignItems: 'center', 
+    backgroundColor: 'rgba(0,0,0,0.2)',
+    paddingHorizontal: 12, 
+    paddingVertical: 6, 
+    borderRadius: 20, 
+    marginBottom: 12,
   },
-  dot: { width: 8, height: 8, borderRadius: 4, marginRight: 6 },
-  connectionText: { color: '#fff', fontWeight: '600', fontSize: 12 },
-  ssidText: { fontSize: 22, fontWeight: 'bold', color: '#fff', marginBottom: 4, textAlign: 'center' },
-  ipText: { fontSize: 14, color: 'rgba(255,255,255,0.8)', marginBottom: 20 },
 
-  // METER AREA
+  dot: { 
+    width: 8, 
+    height: 8, 
+    borderRadius: 4, 
+    marginRight: 6 
+  },
+
+  connectionText: { 
+    color: '#fff', 
+    fontWeight: '600', 
+    fontSize: 12 
+  },
+
+  ssidText: { 
+    fontSize: 22, 
+    fontWeight: 'bold', 
+    color: '#fff', 
+    marginBottom: 4, 
+    textAlign: 'center' 
+  },
+
+  ipText: { 
+    fontSize: 14, 
+    color: 'rgba(255,255,255,0.8)', 
+    marginBottom: 20 
+  },
+
   meterContainer: {
-    width: '100%', alignItems: 'center', justifyContent: 'center', minHeight: 160, 
+    width: '100%', 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    minHeight: 160, 
   },
-  startCircleButton: {
-    width: 120, height: 120, borderRadius: 60, backgroundColor: '#fff',
-    justifyContent: 'center', alignItems: 'center',
-    shadowColor: '#000', shadowOpacity: 0.2, shadowRadius: 10, elevation: 5
-  },
-  startBtnText: { color: '#3b82f6', fontSize: 24, fontWeight: '900' },
-  
-  // RESULTS
-  resultRowContainer: {
-    flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%',
-    backgroundColor: 'rgba(0,0,0,0.15)', padding: 15, borderRadius: 16
-  },
-  resultItem: { alignItems: 'center', flex:1 },
-  resultIconBox: {
-    width: 28, height: 28, borderRadius: 14, backgroundColor: '#fff',
-    justifyContent:'center', alignItems:'center', marginBottom:4
-  },
-  resultLabel: { color: 'rgba(255,255,255,0.8)', fontSize: 10, textTransform:'uppercase' },
-  resultValue: { color: '#fff', fontSize: 22, fontWeight: 'bold' },
-  resultUnit: { color: 'rgba(255,255,255,0.7)', fontSize: 10 },
-  verticalDivider: { width: 1, height: 30, backgroundColor: 'rgba(255,255,255,0.3)' },
-  retestButton: { padding: 8, marginLeft: 5 },
 
-  // GENERIC & LISTS
-  gridContainer: { marginBottom: 24 },
+  startCircleButton: {
+    width: 120, 
+    height: 120, 
+    borderRadius: 60, 
+    backgroundColor: '#fff',
+    justifyContent: 'center', 
+    alignItems: 'center',
+    shadowColor: '#000', 
+    shadowOpacity: 0.2, 
+    shadowRadius: 10, 
+    elevation: 5
+  },
+
+  startBtnText: { 
+    color: '#3b82f6', 
+    fontSize: 24, 
+    fontWeight: '900' 
+  },
+  
+  resultRowContainer: {
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    width: '100%',
+    backgroundColor: 'rgba(0,0,0,0.15)',
+    padding: 15, 
+    borderRadius: 16
+  },
+
+  resultItem: { 
+    alignItems: 'center', 
+    flex:1 
+  },
+
+  resultIconBox: {
+    width: 28, 
+    height: 28, 
+    borderRadius: 14, 
+    backgroundColor: '#fff',
+    justifyContent:'center', 
+    alignItems:'center', 
+    marginBottom:4
+  },
+
+  resultLabel: { 
+    color: 'rgba(255,255,255,0.8)', 
+    fontSize: 10, 
+    textTransform:'uppercase' 
+  },
+
+  resultValue: { 
+    color: '#fff', 
+    fontSize: 22, 
+    fontWeight: 'bold' 
+  },
+
+  resultUnit: { 
+    color: 'rgba(255,255,255,0.7)', 
+    fontSize: 10 
+  },
+
+  verticalDivider: { 
+    width: 1, height: 30, 
+    backgroundColor: 'rgba(255,255,255,0.3)' 
+  },
+
+  retestButton: { 
+    padding: 8,
+     marginLeft: 5 
+    },
+
+  gridContainer: { 
+    marginBottom: 24 
+  },
+
   statCard: {
-    backgroundColor: '#1e293b', borderRadius: 20, padding: 16,
-    borderWidth: 1, borderColor: '#334155',
+    backgroundColor: '#1e293b', 
+    borderRadius: 20, 
+    padding: 16,
+    borderWidth: 1, 
+    borderColor: '#334155',
   },
+
   iconBox: {
-    width: 44, height: 44, borderRadius: 12, justifyContent: 'center', alignItems: 'center',
+    width: 44, 
+    height: 44, 
+    borderRadius: 12, 
+    justifyContent: 'center', 
+    alignItems: 'center',
   },
-  statLabel: { color: '#94a3b8', fontSize: 12, marginBottom: 2 },
-  valueRow: { flexDirection: 'row', alignItems: 'baseline' },
-  statValue: { fontSize: 24, fontWeight: 'bold', color: '#fff' },
-  unitText: { fontSize: 12, color: '#64748b', marginLeft: 4 },
+
+  statLabel: { 
+    color: '#94a3b8', 
+    fontSize: 12, 
+    marginBottom: 2 
+  },
+
+  valueRow: { 
+    flexDirection: 'row', 
+    alignItems: 'baseline' 
+  },
+
+  statValue: { 
+    fontSize: 24, 
+    fontWeight: 'bold', 
+    color: '#fff' 
+  },
+
+  unitText: { 
+    fontSize: 12, 
+    color: '#64748b', 
+    marginLeft: 4 
+  },
+
   miniButton: {
-    backgroundColor: '#334155', paddingVertical: 8, paddingHorizontal: 16, borderRadius: 12,
+    backgroundColor: '#334155', 
+    paddingVertical: 8, 
+    paddingHorizontal: 16, 
+    borderRadius: 12,
   },
-  miniButtonText: { color: '#fff', fontSize: 12, fontWeight: 'bold' },
-  sectionTitle: { fontSize: 18, fontWeight: 'bold', color: '#fff', marginBottom: 16 },
+
+  miniButtonText: { 
+    color: '#fff', 
+    fontSize: 12, 
+    fontWeight: 'bold' 
+  },
+
+  sectionTitle: { 
+    fontSize: 18, 
+    fontWeight: 'bold', 
+    color: '#fff', 
+    marginBottom: 16 
+  },
+
   detailsList: {
-    backgroundColor: '#1e293b', borderRadius: 20, padding: 20,
-    borderWidth: 1, borderColor: '#334155',
+    backgroundColor: '#1e293b',
+    borderRadius: 20, 
+    padding: 20,
+    borderWidth: 1, 
+    borderColor: '#334155',
   },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: 4 },
-  rowLeft: { flexDirection: 'row', alignItems: 'center' },
+
+  row: { 
+    flexDirection: 'row', 
+    justifyContent: 'space-between', 
+    alignItems: 'center', 
+    paddingVertical: 4 
+  },
+
+  rowLeft: { 
+    flexDirection: 'row', 
+    alignItems: 'center' 
+  },
+
   rowIcon: {
-    width: 32, height: 32, borderRadius: 8, justifyContent: 'center', alignItems: 'center', marginRight: 12,
+    width: 32, 
+    height: 32, 
+    borderRadius: 8, 
+    justifyContent: 'center', 
+    alignItems: 'center', 
+    marginRight: 12,
   },
-  rowLabel: { color: '#94a3b8', fontSize: 14 },
-  rowValue: { color: '#fff', fontSize: 14, fontWeight: '600' },
-  divider: { height: 1, backgroundColor: '#334155', marginVertical: 12 },
+
+  rowLabel: { 
+    color: '#94a3b8', 
+    fontSize: 14 
+  },
+
+  rowValue: { 
+    color: '#fff', 
+    fontSize: 14, 
+    fontWeight: '600' 
+  },
+
+  divider: { 
+    height: 1, 
+    backgroundColor: '#334155', 
+    marginVertical: 12 
+  },
 });

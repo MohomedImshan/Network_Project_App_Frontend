@@ -5,15 +5,19 @@ import {
   StyleSheet,
   FlatList,
   ActivityIndicator,
+  StatusBar,
+  SafeAreaView,
   TouchableOpacity,
-  StatusBar
+  RefreshControl,
+  Dimensions
 } from "react-native";
-import { useRoute } from "@react-navigation/native";
+import { useRoute, useNavigation } from "@react-navigation/native";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import BackendApi from "../api/BackendApi";
 
 export default function DeviceHistoryScreen() {
   const route = useRoute();
+  const navigation = useNavigation();
   const { wifi_id, ssid } = route.params || {};
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -40,179 +44,295 @@ export default function DeviceHistoryScreen() {
   const formatUptime = (seconds) => {
     const d = Math.floor(seconds / 86400);
     const h = Math.floor((seconds % 86400) / 3600);
-    const m = Math.floor((seconds % 3600) / 60);
-    return `${d}d ${h}h ${m}m`;
+    if (d > 0) return `${d}d ${h}h`;
+    return `${h}h ${Math.floor((seconds % 3600) / 60)}m`;
   };
 
   const renderDeviceCard = ({ item }) => (
     <View style={styles.card}>
-      <View style={styles.iconContainer}>
-        <MaterialCommunityIcons 
-          name={item.device_name ? "laptop" : "help-network"} 
-          size={22} 
-          color={item.is_new ? "#22c55e" : "#38bdf8"} 
-        />
+      <View style={styles.cardMain}>
+        <View style={styles.iconCircle}>
+          <MaterialCommunityIcons 
+            name={item.device_name?.toLowerCase().includes('phone') ? "cellphone" : "laptop"} 
+            size={24} 
+            color="#6ee7f0" 
+          />
+        </View>
+        <View style={styles.textGroup}>
+          <View style={styles.nameRow}>
+            <Text style={styles.deviceName} numberOfLines={1}>
+              {item.device_name || "Unknown Device"}
+            </Text>
+            {item.is_new && (
+              <View style={styles.newTag}>
+                <Text style={styles.newTagText}>NEW</Text>
+              </View>
+            )}
+          </View>
+          <Text style={styles.macText}>{item.mac_address.toUpperCase()}</Text>
+        </View>
       </View>
 
-      <View style={styles.infoContainer}>
-        <View style={styles.row}>
-          <Text style={styles.deviceName} numberOfLines={1}>
-            {item.device_name || "Unknown Device"}
-          </Text>
-          {item.is_new && (
-            <View style={styles.newBadge}>
-              <Text style={styles.newBadgeText}>NEW</Text>
-            </View>
-          )}
+      <View style={styles.divider} />
+
+      <View style={styles.cardFooter}>
+        <View style={styles.statItem}>
+          <MaterialCommunityIcons name="ip-network" size={16} color="#adb5bd" />
+          <Text style={styles.statValue}>{item.ip}</Text>
         </View>
-        
-        <View style={styles.metaRow}>
-          <Text style={styles.metaText}>{item.ip}</Text>
-          <Text style={styles.dot}>•</Text>
-          <Text style={styles.metaText}>{formatUptime(item.total_uptime_seconds)}</Text>
+        <View style={styles.statItem}>
+          <MaterialCommunityIcons name="clock-outline" size={16} color="#adb5bd" />
+          <Text style={styles.statValue}>{formatUptime(item.total_uptime_seconds)}</Text>
         </View>
       </View>
     </View>
   );
 
   return (
-    <View style={styles.container}>
-      <StatusBar barStyle="light-content" />
+    <SafeAreaView style={styles.container}>
+      <StatusBar barStyle="light-content" backgroundColor="#1a1c2e" />
       
-      {/* HEADER SECTION */}
-      <View style={styles.header}>
-        <Text style={styles.title}>Network Activity</Text>
-        <View style={styles.ssidContainer}>
-          <MaterialCommunityIcons name="wifi" size={16} color="#38bdf8" />
-          <Text style={styles.subtitle}>{ssid || "All Networks"}</Text>
-        </View>
+      {/* HEADER WITH BACK AND REFRESH */}
+      <View style={styles.navHeader}>
+        <TouchableOpacity 
+          style={styles.navButton} 
+          onPress={() => navigation.goBack()}
+        >
+          <MaterialCommunityIcons name="arrow-left" size={24} color="#fff" />
+        </TouchableOpacity>
+        
+        <Text style={styles.navTitle}>Device History</Text>
+        
+        <TouchableOpacity 
+          style={styles.navButton} 
+          onPress={loadHistory}
+        >
+          <MaterialCommunityIcons name="refresh" size={24} color="#3780bb" />
+        </TouchableOpacity>
       </View>
 
-      {loading && data.length === 0 ? (
-        <View style={styles.center}>
-          <ActivityIndicator size="large" color="#38bdf8" />
-        </View>
-      ) : (
-        <FlatList
-          data={data}
-          keyExtractor={(item) => `${item.ip}-${item.mac_address}`}
-          renderItem={renderDeviceCard}
-          refreshing={loading}
-          onRefresh={loadHistory}
-          contentContainerStyle={styles.listPadding}
-          ListEmptyComponent={
-            <View style={styles.center}>
-              <Text style={styles.emptyText}>No devices found for this period.</Text>
-            </View>
-          }
-        />
-      )}
-    </View>
+      {/* SUB-HEADER: SSID LEFT, COUNT RIGHT */}
+      <View style={styles.subHeader}>
+         <View style={styles.statusPill}>
+            <View style={styles.dot} />
+            <Text style={styles.statusText} numberOfLines={1}>
+              {ssid || "SCAN LOGS"}
+            </Text>
+         </View>
+
+         <View style={styles.countBadge}>
+            <Text style={styles.countText}>{data.length}</Text>
+            <Text style={styles.countLabel}>DEVICES</Text>
+         </View>
+      </View>
+
+      <View style={styles.body}>
+        {loading && data.length === 0 ? (
+          <View style={styles.center}>
+            <ActivityIndicator size="large" color="#4c6ef5" />
+            <Text style={styles.loadingText}>Synchronizing history...</Text>
+          </View>
+        ) : (
+          <FlatList
+            data={data}
+            keyExtractor={(item, index) => `${item.mac_address}-${index}`}
+            renderItem={renderDeviceCard}
+            contentContainerStyle={styles.listPadding}
+            showsVerticalScrollIndicator={false}
+            refreshControl={
+              <RefreshControl refreshing={loading} onRefresh={loadHistory} tintColor="#4c6ef5" />
+            }
+            ListEmptyComponent={
+              <View style={styles.center}>
+                <MaterialCommunityIcons name="database-off" size={64} color="#2d334a" />
+                <Text style={styles.emptyText}>No logs found for this period.</Text>
+              </View>
+            }
+          />
+        )}
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#0f172a",
-    padding:15,
-    backgroundColor: "#0f172a", // Deeper slate background
+    backgroundColor: "#1a1c2e", 
   },
-  header: {
+  navHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingHorizontal: 20,
-    paddingTop: 50,
-    paddingBottom: 20,
-    backgroundColor: "#1e293b",
-    borderBottomLeftRadius: 24,
-    borderBottomRightRadius: 24,
-
+    paddingVertical: 40,
   },
-  title: {
-    color: "#fff",
+  navButton: {
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  navTitle: {
+    color: '#fff',
+    fontSize: 25,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  subHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    marginBottom: 20,
+    marginTop: 10,
+    
+  },
+  statusPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'rgb(76, 173, 238)',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 12,
+    maxWidth: '70%',
+  },
+  dot: {
+    width: 8,
+    height: 8,
+    borderRadius: 4,
+    backgroundColor: '#6eeb34',
+    marginRight: 10,
+    shadowColor: '#6eeb34',
+    shadowOpacity: 0.8,
+    shadowRadius: 4,
+  },
+  statusText: {
+    color: '#fcfcfc',
+    fontSize: 13,
+    fontWeight: '800',
+    letterSpacing: 0.5,
+  },
+  countBadge: {
+    alignItems: 'flex-end',
+  },
+  countText: {
+    color: '#fff',
     fontSize: 22,
-    fontWeight: "bold",
+    fontWeight: '900',
+    lineHeight: 24,
   },
-  ssidContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 4,
+  countLabel: {
+    color: '#ffffff',
+    fontSize: 9,
+    fontWeight: 'bold',
+    letterSpacing: 1,
   },
-  subtitle: {
-    color: "#38bdf8",
-    fontSize: 14,
-    marginLeft: 6,
-    fontWeight: "500",
+  body: {
+    flex: 1,
+    backgroundColor: '#3f4150', 
+    borderTopLeftRadius: 35,
+    borderTopRightRadius: 35,
+    paddingTop: 10,
   },
   listPadding: {
-    padding: 16,
+    padding: 20,
     paddingBottom: 40,
   },
   card: {
-    flexDirection: "row",
-    alignItems: "center",
-    backgroundColor: "#1e293b",
-    padding: 14,
-    borderRadius: 16,
-    marginBottom: 12,
+    backgroundColor: '#191c35',
+    borderRadius: 22,
+    padding: 18,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: "#334155",
+    borderColor: 'rgba(255,255,255,0.04)',
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
   },
-  iconContainer: {
-    width: 44,
-    height: 44,
-    borderRadius: 12,
-    backgroundColor: "#0f172a",
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 14,
+  cardMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 14,
   },
-  infoContainer: {
+  iconCircle: {
+    width: 50,
+    height: 50,
+    borderRadius: 15,
+    backgroundColor: 'rgba(76, 110, 245, 0.08)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 15,
+  },
+  textGroup: {
     flex: 1,
   },
-  row: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+  nameRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   deviceName: {
-    color: "#f8fafc",
-    fontSize: 15,
-    fontWeight: "600",
+    color: '#fff',
+    fontSize: 17,
+    fontWeight: '700',
     flex: 1,
   },
-  newBadge: {
-    backgroundColor: "rgba(34, 197, 94, 0.15)",
+  newTag: {
+    backgroundColor: '#41ac52',
     paddingHorizontal: 8,
-    paddingVertical: 2,
+    paddingVertical: 3,
     borderRadius: 6,
-    borderWidth: 1,
-    borderColor: "#22c55e",
   },
-  newBadgeText: {
-    color: "#22c55e",
+  newTagText: {
+    color: '#fff',
     fontSize: 10,
-    fontWeight: "bold",
+    fontWeight: '900',
   },
-  metaRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginTop: 4,
-  },
-  metaText: {
-    color: "#94a3b8",
+  macText: {
+    color: '#5c6370',
     fontSize: 12,
+    marginTop: 3,
+    fontFamily: 'monospace',
   },
-  dot: {
-    color: "#475569",
-    marginHorizontal: 8,
+  divider: {
+    height: 1,
+    backgroundColor: '#6c757d',
+    marginVertical: 6,
+  },
+  cardFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    paddingTop: 10,
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  statValue: {
+    color: '#6c757d',
+    fontSize: 13,
+    marginLeft: 7,
+    fontWeight: '600',
   },
   center: {
     flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 100,
+  },
+  loadingText: {
+    color: '#6c757d',
+    marginTop: 15,
+    fontSize: 14,
+    fontWeight: '500',
   },
   emptyText: {
-    color: "#64748b",
-    fontSize: 14,
+    color: '#495057',
+    marginTop: 12,
+    fontSize: 15,
   }
 });
